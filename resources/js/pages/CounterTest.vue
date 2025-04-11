@@ -11,7 +11,7 @@
     </div>
 </template>
 
-<script>
+<script lang="js">
 import CounterButtonTest from '@/components/tests/CounterButtonTest.vue';
 
 export default{
