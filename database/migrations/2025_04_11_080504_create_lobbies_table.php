@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('lobbies', function (Blueprint $table) {
             $table->id();
+            $table->string('HostId');
+            $table->string('LobbyCode');
             $table->timestamps();
         });
     }

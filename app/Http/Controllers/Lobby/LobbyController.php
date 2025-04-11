@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Lobby;
 
+use App\Http\Controllers\Controller;
 use App\Models\Lobby;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LobbyController extends Controller
 {
@@ -12,7 +14,15 @@ class LobbyController extends Controller
      */
     public function index()
     {
-        //
+        var_dump("was here");
+        $lobbyCode = '1234';
+        var_dump($lobbyCode);
+        /*$lobby = \App\Models\Lobby\Lobby::create([
+            'LobbyCode' => $lobbyCode,
+            'HostId' => '123'
+        ]);
+        var_dump($lobby);*/
+        return Inertia::render('buzzer/Index');
     }
 
     /**
