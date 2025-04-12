@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class BuzzerPlayer extends Model
 {
     protected $guarded = [];
-    public function buzzerLobby(){
+    public function buzzer_lobby(){
         return $this->belongsTo(BuzzerLobby::class);
     }
 }

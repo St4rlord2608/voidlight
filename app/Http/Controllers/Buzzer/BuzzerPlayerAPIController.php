@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Buzzer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerPlayer;
+use App\Models\Lobby\Lobby;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class BuzzerPlayerAPIController extends Controller
@@ -19,9 +21,22 @@ class BuzzerPlayerAPIController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store($lobbyCode, $userId, Request $request)
     {
-        //
+        try{
+            $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail();
+            $buzzerLobby = $lobby->buzzer_lobby;
+            if(!$buzzerLobby){
+                return response()->json(['message' => 'No Buzzer Lobby found for this lobby'], 404);
+            }
+            $buzzerPlayer = BuzzerPlayer::create([
+                'user_id' => $userId,
+                'buzzer_lobby_id' => $buzzerLobby->id
+            ]);
+            return $buzzerPlayer;
+        }catch(\Throwable $ex){
+            return response()->json(['message' => 'An unexpected error occurred while creating the player.'], 500);
+        }
     }
 
     /**

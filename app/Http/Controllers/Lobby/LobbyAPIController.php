@@ -4,16 +4,22 @@ namespace App\Http\Controllers\Lobby;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lobby\Lobby;
+use App\Services\Lobby\LobbyService;
 use Illuminate\Http\Request;
 
 class LobbyAPIController extends Controller
 {
+    protected $lobbyService;
+
+    public function __construct(LobbyService $lobbyService){
+        $this->lobbyService = $lobbyService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        dd("hello world");
+
     }
 
     /**
@@ -21,17 +27,10 @@ class LobbyAPIController extends Controller
      */
     public function store(Request $request)
     {
-        var_dump("was here");
         $request->validate([
-            'HostId' => 'required'
+            'hostId' => 'required'
         ]);
-        $lobbyCode = $this->CreateValidLobbyCode();
-        var_dump($lobbyCode);
-        $lobby = Lobby::create([
-            'LobbyCode' => $lobbyCode,
-            'HostId' => $request->get('HostId')
-        ]);
-        return $lobby;
+        return $this->lobbyService->createLobby($request->get('hostId'));
     }
 
     /**
@@ -56,29 +55,5 @@ class LobbyAPIController extends Controller
     public function destroy(Lobby $lobby)
     {
         //
-    }
-
-    private function CreateValidLobbyCode(): string
-    {
-        $lobbies = Lobby::all();
-        $lobbyCode = $this->CreateUncheckedLobbyCode();
-        while($lobbies->filter(function($item) use ($lobbyCode){
-            return $item->LobbyCode == $lobbyCode;
-        })->count() !== 0){
-            $lobbyCode = $this->CreateUncheckedLobbyCode();
-        }
-        return $lobbyCode;
-    }
-
-    private function CreateUncheckedLobbyCode(): string
-    {
-        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        $lobbyCode = "";
-        $maxIndex = strlen($chars) - 1;
-        for($i = 0; $i < 10; $i++){
-            $randomIndex = random_int(0, $maxIndex);
-            $lobbyCode .= $chars[$randomIndex];
-        }
-        return $lobbyCode;
     }
 }

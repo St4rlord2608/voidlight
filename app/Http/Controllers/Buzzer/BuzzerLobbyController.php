@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Buzzer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerLobby;
+use App\Models\Lobby\Lobby;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class BuzzerLobbyController extends Controller
 {
@@ -35,9 +37,26 @@ class BuzzerLobbyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BuzzerLobby $buzzerLobby)
+    public function show($lobbyCode)
     {
-        //
+        try{
+            $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail();
+            $buzzerLobby = $lobby->buzzer_lobby;
+            $buzzerLobby->load('buzzer_players');
+            if(!$buzzerLobby){
+                throw new \Exception('Buzzer Lobby not found');
+            }
+        }catch(\Throwable $ex){
+            return Inertia::render('buzzer/Play', [
+                'propLobby' => null,
+                'propBuzzerLobby' => null,
+                'propErrorMessage' => 'error'
+            ]);
+        }
+        return Inertia::render('buzzer/Play', [
+            'propLobby' => $lobby,
+            'propBuzzerLobby' => $buzzerLobby
+        ]);
     }
 
     /**

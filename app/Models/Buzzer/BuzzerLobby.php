@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class BuzzerLobby extends Model
 {
     protected $guarded = [];
-    public function buzzerPlayers(){
+    public function buzzer_players(){
         return $this->hasMany(BuzzerPlayer::class);
     }
 
