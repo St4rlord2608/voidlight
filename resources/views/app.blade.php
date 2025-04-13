@@ -29,10 +29,6 @@
                 background-color: oklch(0.145 0 0);
             }*/
 
-            html{
-                background-color: var(--background100);
-                color: var(--text100);
-            }
         </style>
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>

@@ -82,7 +82,7 @@ class BuzzerLobbyAPIController extends Controller
         $validated = $request->validate([
             'id' => 'required',
             'buzzerLocked' => 'required|boolean',
-            'buzzedPlayerId' => 'required'
+            'buzzedPlayerId' => 'present'
         ]);
         $buzzerLobby = BuzzerLobby::where('id', $validated['id'])->firstOrFail();
         $buzzerLobby->buzzer_locked = $validated['buzzerLocked'];

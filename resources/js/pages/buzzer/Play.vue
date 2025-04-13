@@ -181,7 +181,7 @@ interface Player {
     <section class="buzzer-play-section">
         <h1 class="heading">Buzz</h1>
         <div v-if="lobbyExists" class="buzzer-play-container">
-            <div class="player-list-container">
+            <div class="player-list-container card">
                 <h2 class="player-list-heading">Players</h2>
                 <ul class="player-list">
                     <li class="player-card" v-for="player in players" :key="player.userId">
@@ -200,55 +200,87 @@ interface Player {
                     </li>
                 </ul>
             </div>
-            <div class="play-container">
-                <div v-if="!owningPlayer.isHost" class="buzz-container">
-                    <button class="buzzer">Buzz</button>
-                    <div class="play-buzzed-user">{{ buzzedPlayerName }} Buzzed</div>
-                </div>
-                <div v-if="!owningPlayer.isHost" class="text-container">
-                    <label class="text-label">Text</label>
-                    <textarea class="text"/>
-                </div>
-                <div v-else>
-                    <div class="command-container">
-                        <div class="points-controls">
-                            <div class="point-control-group">
-                                <label for="correctBuzz">Points for correct buzzer</label>
-                                <input name="correctBuzz" type="number" v-bind:value="correctBuzzPoints">
-                            </div>
-                            <div>
-                                <label>Points for incorrect buzzer</label>
-                                <input type="number" v-bind:value="falseBuzzPoints">
-                            </div>
-                            <div>
-                                <label>Points for manual point change</label>
-                                <input type="number" v-bind:value="manualChangePoints">
-                            </div>
-                        </div>
-                        <div class="buzz-controls">
-                            <div v-if="buzzerLobby.buzzerLocked">Buzzer is Locked</div>
-                            <div v-else>Users can buzzer</div>
-                            <div>{{ buzzedPlayerName }}</div>
-                            <div>
-                                <button>Correct</button>
-                                <button>False</button>
-                            </div>
-                            <button>Lock Buzzer</button>
-                        </div>
-                        <div class="player-text-container">
-                            <div v-for="player in players" :key="player.userId">
-                                <label>{{ player.name }}</label>
-                                <textarea v-bind:value="player.text"/>
-                            </div>
-                        </div>
-                        <div class="host-text-container">
-                            <div>
-                                <label>Text for users</label>
-                                <textarea v-bind:value="hostText"/>
-                            </div>
-                        </div>
-                        <div>
+            <div class="secondary-container">
+                <div class="play-container">
+                    <div v-if="!owningPlayer.isHost" class="buzz-container card">
+                        <button @click="changeBuzzerLobbyData(true, owningPlayer.userId)" v-if="!buzzerLobby.buzzerLocked" class="buzzer success">Buzz</button>
+                        <div v-else class="buzzer disabled">Buzz</div>
+                        <div class="play-buzzed-user">{{ buzzedPlayerName }} Buzzed</div>
+                    </div>
+                    <div v-if="!owningPlayer.isHost" class="text-container">
+                        <label class="text-label">Text</label>
+                        <textarea class="text"/>
+                    </div>
+                    <div v-else>
+                        <div class="command-container card">
 
+                            <div class="buzz-controls">
+                                <h2 class="heading">Buzzer</h2>
+                                <div class="locked-buzzer-indicator" v-if="buzzerLobby.buzzerLocked">Buzzer is Locked</div>
+                                <div class="unlocked-buzzer-indicator" v-else>Users can buzzer</div>
+                                <div class="buzzed-player">{{ buzzedPlayerName }}</div>
+                                <div class="buzzer-button-container">
+                                    <div class="resolve-buzzer-container">
+                                        <button v-bind:disabled="buzzedPlayerName == ''" class="correct-button success">✓</button>
+                                        <button v-bind:disabled="buzzedPlayerName == ''" class="false-button error">✗</button>
+                                    </div>
+                                    <div class="button-state-container">
+                                        <button
+                                            @click="changeBuzzerLobbyData(true, owningPlayer.userId)" v-bind:disabled="buzzerLobby.buzzerLocked"
+                                            class="primary">Lock Buzzer</button>
+                                        <button
+                                            @click="changeBuzzerLobbyData(false, '')" v-bind:disabled="!buzzerLobby.buzzerLocked"
+                                            class="secondary">Reset Buzzer</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="host-text-container">
+                                <div class="host-text">
+                                    <h2 class="heading">Text for users</h2>
+                                    <textarea v-bind:value="hostText"/>
+                                </div>
+                            </div>
+                            <div class="player-text-container">
+                                <h2 class="heading">Texts from Players</h2>
+                                <div class="player-text-lock-button-container">
+                                    <button class="warning">Lock all Texts</button>
+                                    <button class="secondary">Unlock all Texts</button>
+                                </div>
+                                <div class="text-container">
+                                    <div class="player-text" v-for="player in players" :key="player.userId">
+                                        <div class="name-container">
+                                            <label class="name">{{ player.name }}</label>
+                                            <button @click="changePlayerData(player.userId, player.points, false)" v-if="player.textLocked" class="has-tooltip" data-tooltip="unlock text">🔒</button>
+                                            <button @click="changePlayerData(player.userId, player.points, true)" v-if="!player.textLocked" class="has-tooltip" data-tooltip="lock text">🔓</button>
+                                        </div>
+                                        <textarea v-bind:value="player.text"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="owningPlayer.isHost" class="settings-container card">
+                    <h2>Settings</h2>
+                    <div class="points-controls">
+                        <h3 class="heading">Points</h3>
+                        <div class="input-container">
+                            <div class="input-block">
+                                <label class="has-tooltip" data-tooltip="Points for correct buzzer">Correct</label>
+                                <input min="0" name="correctBuzz" type="number" v-bind:value="correctBuzzPoints">
+                            </div>
+                            <div class="input-block">
+                                <label class="has-tooltip" data-tooltip="Points for false buzzer">False</label>
+                                <input min="0" type="number" v-bind:value="falseBuzzPoints">
+                            </div>
+                            <div class="input-block">
+                                <label class="has-tooltip" data-tooltip="Points for manual point change">Manual</label>
+                                <input min="0" type="number" v-bind:value="manualChangePoints">
+                            </div>
                         </div>
                     </div>
                 </div>
