@@ -24,5 +24,6 @@ Route::get('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'show']);
 Route::patch('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'update']);
 
 Route::post('/buzzer/{lobbyCode}/{userId}', [BuzzerPlayerAPIController::class, 'store']);
+Route::patch('/buzzer/{lobbyCode}/{userId}', [BuzzerPlayerAPIController::class, 'update']);
 
 Route::get('/lobby/{lobbyCode}', [LobbyAPIController::class, 'show']);

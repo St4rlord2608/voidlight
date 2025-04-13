@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('buzzer_players', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
+            $table->string('name');
             $table->foreignIdFor(\App\Models\Buzzer\BuzzerLobby::class)->constrained();
             $table->integer('points')->default(0);
             $table->boolean('text_locked')->default(false);
             $table->timestamps();
+            $table->unique(['user_id', 'buzzer_lobby_id']);
         });
     }
 

@@ -24,6 +24,9 @@ class BuzzerPlayerAPIController extends Controller
     public function store($lobbyCode, $userId, Request $request)
     {
         try{
+            $validated = $request->validate([
+                'name' => 'required'
+            ]);
             $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail();
             $buzzerLobby = $lobby->buzzer_lobby;
             if(!$buzzerLobby){
@@ -31,7 +34,8 @@ class BuzzerPlayerAPIController extends Controller
             }
             $buzzerPlayer = BuzzerPlayer::create([
                 'user_id' => $userId,
-                'buzzer_lobby_id' => $buzzerLobby->id
+                'buzzer_lobby_id' => $buzzerLobby->id,
+                'name' => $validated['name']
             ]);
             return $buzzerPlayer;
         }catch(\Throwable $ex){
@@ -50,9 +54,18 @@ class BuzzerPlayerAPIController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BuzzerPlayer $buzzerPlayer)
+    public function update($lobbyCode, $userId, Request $request)
     {
-        //
+        $validated = $request->validate([
+            'id' => 'required',
+            'name' => 'required',
+            'points' => 'required',
+            'textLocked' => 'required'
+        ]);
+        $buzzerPlayer = BuzzerPlayer::where('id', $validated['id'])->firstOrFail();
+        $buzzerPlayer->points = $validated['points'];
+        $buzzerPlayer->text_locked = $validated['textLocked'];
+        $buzzerPlayer->save();
     }
 
     /**

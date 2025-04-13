@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 const tempUserIdKey = 'tempId'
+const tempNameKey = 'tempName'
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -21,6 +22,22 @@ export function initializeTempUserId(){
         console.error('Error accessing localStorage for User ID: ', error)
     }
     return tempUserId;
+}
+
+export function initializeTempName(){
+    let tempName = "";
+    try{
+        const storedName = localStorage.getItem(tempNameKey);
+        if(storedName){
+            tempName = storedName;
+        }else{
+            tempName = "guest-name-" + createRandomId();
+            localStorage.setItem(tempNameKey, tempName)
+        }
+    }catch(error){
+        console.error('Error accessing localStorage for User ID: ', error)
+    }
+    return tempName;
 }
 
 export function createRandomId(length = 10) : string{

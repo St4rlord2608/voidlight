@@ -253,9 +253,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-h1{
-    font-size: 48px;
-    text-align: center;
-    margin: 20px 5px;
-}
