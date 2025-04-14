@@ -1,3 +1,5 @@
+import './echo'
+
 import '../css/app.css';
 import '../css/buzzer/index.css'
 import '../css/general.css'

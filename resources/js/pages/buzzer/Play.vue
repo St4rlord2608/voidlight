@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { computed, onMounted, reactive, ref, Ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, Ref, watch } from 'vue';
 import { initializeTempName, initializeTempUserId } from '@/lib/utils';
 import axios from 'axios';
 
@@ -70,6 +70,9 @@ interface Player {
     const falseBuzzPoints: Ref<number> = ref(1);
     const manualChangePoints: Ref<number> = ref(1);
     const hostText: Ref<string> = ref('');
+
+    const channelName = computed(() => lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}` : null);
+    let echoChannel = null;
 
     function initializeLobbyData(){
         if(props.propBuzzerLobby && props.propLobby ){
@@ -174,7 +177,27 @@ interface Player {
             initializePropPlayers(props.propBuzzerLobby?.buzzer_players);
             initializePlayer();
         }
+        console.log("Attempting to subscribe to channel:", channelName.value);
+        echoChannel = window.Echo.channel(channelName.value);
+        console.log(echoChannel)
+        echoChannel.listen('BuzzerLobbyChanged', (event) => {
+            console.log("listened")
+            console.log(event);
+            buzzerLobby.buzzerLocked = event.buzzerLocked;
+            buzzerLobby.buzzedPlayerId = event.buzzedPlayerId;
+
+        }).error((error) => {
+            console.error(error);
+        })
+        console.log(echoChannel)
     })
+
+onUnmounted(() => {
+    if(echoChannel){
+        window.Echo.leave(channelName.value);
+        echoChannel = null;
+    }
+})
 </script>
 
 <template>

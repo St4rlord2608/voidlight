@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Buzzer;
 
+use App\Events\BuzzerLobbyChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerLobby;
 use App\Models\Lobby\Lobby;
@@ -84,6 +85,11 @@ class BuzzerLobbyAPIController extends Controller
             'buzzerLocked' => 'required|boolean',
             'buzzedPlayerId' => 'present'
         ]);
+        broadcast(new BuzzerLobbyChanged(
+            $lobbyCode,
+            $validated['buzzerLocked'],
+            $validated['buzzedPlayerId']
+        ));
         $buzzerLobby = BuzzerLobby::where('id', $validated['id'])->firstOrFail();
         $buzzerLobby->buzzer_locked = $validated['buzzerLocked'];
         $buzzerLobby->buzzed_player_id = $validated['buzzedPlayerId'];
