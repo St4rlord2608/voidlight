@@ -1,0 +1,262 @@
+﻿.buzzer-play-section{
+    .buzzer-play-container{
+        display: flex;
+        gap: 40px;
+
+        .player-list-container{
+            min-width: 400px;
+            width: 400px;
+            border-radius: 10px;
+            padding: 30px 20px;
+
+            .player-list{
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+
+                .player-card{
+                    border: 1px solid var(--accent-secondary50);
+                    padding: 10px 20px;
+                    border-radius: 20px;
+                    display: flex;
+                    flex-direction: row;
+                    gap: 20px;
+                    justify-content: space-between;
+                    background: var(--secondary15);
+
+                    .host-points-container{
+                        display: flex;
+                        gap: 5px;
+
+                        .points{
+                            width: 4ch;
+                            padding: 0 5px;
+                            text-align: end;
+
+                            &:focus{
+                                outline: none;
+                            }
+                        }
+
+                        .point-text{
+                            align-content: center;
+                        }
+
+                        .points-adjust-container{
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            button{
+                                padding: 0;
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 50%;
+                                margin: 0 5px;
+                                background: var(--secondary30);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .secondary-container{
+            display: flex;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .play-container{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+
+            .buzz-container, .command-container{
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                flex-direction: column;
+                justify-content: center;
+                gap: 20px;
+                padding: 30px 20px;
+            }
+
+            .buzz-container{
+                .buzzer{
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 50%;
+                    margin-left: auto;
+                    margin-right: auto;
+                    grid-column: 1 / span 3;
+
+                    &.disabled{
+                        background: var(--button-warning30);
+                        align-content: center;
+                        text-align: center;
+                        cursor: not-allowed;
+                    }
+                }
+
+                .play-buzzed-user{
+                    text-align: center;
+                    grid-column: 1 / span 3;
+                }
+            }
+
+            .text-container{
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                .text-label{
+                    text-align: center;
+                }
+
+                .text{
+                    background: var(--secondary20);
+                    padding: 10px;
+                    border-radius: 10px;
+                    outline: none;
+                    max-height: 300px;
+
+                    &:focus{
+                        outline: none;
+                        border: 1px solid var(--accent-secondary60);
+                    }
+                }
+            }
+
+            .command-container{
+                row-gap: 50px;
+
+                .buzz-controls{
+                    grid-column: span 3;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 10px;
+
+                    .buzzer-button-container{
+                        display: flex;
+                        flex-direction: row;
+                        gap: 25px;
+                    }
+
+                    .locked-buzzer-indicator, .unlocked-buzzer-indicator{
+                        padding: 10px;
+                        width: fit-content;
+                        border-radius: 10px;
+                    }
+
+                    .locked-buzzer-indicator{
+                        background: red;
+                    }
+
+                    .unlocked-buzzer-indicator{
+                        background: var(--button-success60);
+                    }
+
+                    .resolve-buzzer-container, .button-state-container{
+                        display: flex;
+                        flex-direction: row;
+                        gap: 10px;
+                    }
+
+                    .resolve-buzzer-container{
+                        .correct-button, .false-button{
+                            width: 44px;
+                        }
+                    }
+                }
+
+                .host-text-container{
+                    grid-column: span 3;
+                }
+
+                .player-text-container{
+                    grid-column: span 3;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+
+                    .player-text-lock-button-container{
+                        display: flex;
+                        justify-content: center;
+                        gap: 10px;
+                    }
+
+                    .text-container{
+                        display: flex;
+                        flex-direction: row;
+                        flex-wrap: wrap;
+                        gap: 20px;
+                        justify-content: center;
+
+                        .player-text{
+                            min-width: 25%;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 10px;
+                            .name-container{
+                                display: flex;
+                                gap: 10px;
+
+                                button{
+                                    line-height: 0;
+                                    font-size: 16px;
+                                    width: 30px;
+                                    height: 30px;
+
+                                    &::after{
+                                        font-size: 16px;
+                                        line-height: 1.5;
+                                    }
+                                }
+                            }
+                            .name{
+                                text-align: center;
+                                align-content: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .settings-container{
+            min-width: 400px;
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 30px 20px;
+
+            .points-controls{
+                border: 1px solid var(--accent-secondary60);
+                padding: 10px 20px;
+                border-radius: 20px;
+                background: var(--secondary15);
+                .input-container{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+
+                    .input-block{
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 10px;
+
+                        input{
+                            width: 5ch;
+                            text-align: center;
+                            margin-left: auto;
+                            margin-right: auto;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
