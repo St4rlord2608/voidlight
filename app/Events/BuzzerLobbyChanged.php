@@ -16,15 +16,17 @@ class BuzzerLobbyChanged implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $lobbyCode;
+    public string $userId;
     public bool $buzzerLocked;
     public $buzzedPlayerId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $lobbyCode, bool $buzzerLocked, $buzzedPlayerId)
+    public function __construct(string $lobbyCode, string $userId, bool $buzzerLocked, $buzzedPlayerId)
     {
         $this->lobbyCode = $lobbyCode;
+        $this->userId = $userId;
         $this->buzzerLocked = $buzzerLocked;
         $this->buzzedPlayerId = $buzzedPlayerId;
     }

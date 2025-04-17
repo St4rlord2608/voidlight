@@ -9,8 +9,14 @@
                     placeholder="Code"
                     @focus="resetJoinText"
                 />
-                <div class="input-error" v-if="joinMessage">{{ joinMessage }}</div>
+                <input
+                    type="text"
+                    v-model="user.userName"
+                    placeholder="Code"
+                    @focus="resetJoinText"
+                />
                 <button @click="joinLobby">Join Lobby</button>
+                <div class="input-error" v-if="joinMessage">{{ joinMessage }}</div>
 
             </div>
             <div class="create-container">
@@ -24,12 +30,13 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
-import { initializeTempUserId } from '@/lib/utils'
+import { initializeTempName, initializeTempUserId, setTempName } from '@/lib/utils';
 
     const lobbyCode = ref('');
 
     const user = reactive({
-        id: ''
+        userId: '',
+        userName: ''
     })
 
     const joinMessage = ref('');
@@ -62,13 +69,17 @@ import { initializeTempUserId } from '@/lib/utils'
     async function joinLobby(){
         resetJoinText();
         try{
-            if(lobbyCode.value != ''){
-                await axios.get(`/api/buzzer/${lobbyCode.value}`)
+            if(lobbyCode.value != '' && user.userName != ''){
+                await axios.get(`/api/buzzer/${lobbyCode.value}`, {params:user})
+                setTempName(user.userName);
                 window.location.href = `/buzzer/${lobbyCode.value}`;
-            }else{
+            }else if(lobbyCode.value == ''){
                 joinMessage.value = 'Please enter a code';
+            }else{
+                joinMessage.value = 'Please enter a username'
             }
         }catch(error){
+            console.log(error)
             if(error.response){
                 joinMessage.value = error.response.data.message;
             }
@@ -81,7 +92,8 @@ import { initializeTempUserId } from '@/lib/utils'
 
 
     onMounted(() => {
-        user.id = initializeTempUserId();
-        lobbyData.hostId = user.id;
+        user.userId = initializeTempUserId();
+        user.userName = initializeTempName();
+        lobbyData.hostId = user.userId;
     })
 </script>

@@ -55,8 +55,12 @@ class BuzzerLobbyAPIController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($lobbyCode)
+    public function show($lobbyCode, Request $request)
     {
+        $request->validate([
+            'userId' => 'required',
+            'userName' => 'required'
+        ]);
         try{
             $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail();
             $buzzerLobby = $lobby->buzzer_lobby;
@@ -82,18 +86,29 @@ class BuzzerLobbyAPIController extends Controller
     {
         $validated = $request->validate([
             'id' => 'required',
+            'userId' => 'required',
             'buzzerLocked' => 'required|boolean',
             'buzzedPlayerId' => 'present'
         ]);
-        broadcast(new BuzzerLobbyChanged(
-            $lobbyCode,
-            $validated['buzzerLocked'],
-            $validated['buzzedPlayerId']
-        ));
-        $buzzerLobby = BuzzerLobby::where('id', $validated['id'])->firstOrFail();
-        $buzzerLobby->buzzer_locked = $validated['buzzerLocked'];
-        $buzzerLobby->buzzed_player_id = $validated['buzzedPlayerId'];
-        $buzzerLobby->save();
+        try{
+            $buzzerLobby = BuzzerLobby::where('id', $validated['id'])->firstOrFail();
+            $lobby = $buzzerLobby->lobby;
+            $hostId = $lobby->host_id;
+            if($hostId != $validated['buzzedPlayerId'] && $buzzerLobby->buzzer_locked){
+                throw new \Exception("buzzer already locked");
+            }
+            $buzzerLobby->buzzer_locked = $validated['buzzerLocked'];
+            $buzzerLobby->buzzed_player_id = $validated['buzzedPlayerId'];
+            $buzzerLobby->save();
+            broadcast(new BuzzerLobbyChanged(
+                $lobbyCode,
+                $validated['userId'],
+                $validated['buzzerLocked'],
+                $validated['buzzedPlayerId']
+            ));
+        }catch(\Throwable $e){
+            return response()->json(['message' => 'Unexpected error: '.$e->getMessage()], 500);
+        }
     }
 
     /**

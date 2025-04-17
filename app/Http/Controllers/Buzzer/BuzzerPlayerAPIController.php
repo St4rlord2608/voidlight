@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Buzzer;
 
+use App\Events\BuzzerPlayerChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerPlayer;
 use App\Models\Lobby\Lobby;
@@ -54,10 +55,11 @@ class BuzzerPlayerAPIController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($lobbyCode, $userId, Request $request)
+    public function update($lobbyCode, $updateUserId, Request $request)
     {
         $validated = $request->validate([
             'id' => 'required',
+            'requestingUserId' => 'required',
             'name' => 'required',
             'points' => 'required',
             'textLocked' => 'required'
@@ -66,6 +68,13 @@ class BuzzerPlayerAPIController extends Controller
         $buzzerPlayer->points = $validated['points'];
         $buzzerPlayer->text_locked = $validated['textLocked'];
         $buzzerPlayer->save();
+        $buzzerLobby = $buzzerPlayer->buzzer_lobby->load('buzzer_players');
+        $lobby = $buzzerLobby->lobby;
+        broadcast(new BuzzerPlayerChanged(
+            $buzzerLobby,
+            $lobby->lobby_code,
+            $validated['requestingUserId']
+        ));
     }
 
     /**

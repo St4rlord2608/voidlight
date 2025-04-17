@@ -3,63 +3,6 @@
         display: flex;
         gap: 40px;
 
-        .player-list-container{
-            min-width: 400px;
-            width: 400px;
-            border-radius: 10px;
-            padding: 30px 20px;
-
-            .player-list{
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-
-                .player-card{
-                    border: 1px solid var(--accent-secondary50);
-                    padding: 10px 20px;
-                    border-radius: 20px;
-                    display: flex;
-                    flex-direction: row;
-                    gap: 20px;
-                    justify-content: space-between;
-                    background: var(--secondary15);
-
-                    .host-points-container{
-                        display: flex;
-                        gap: 5px;
-
-                        .points{
-                            width: 4ch;
-                            padding: 0 5px;
-                            text-align: end;
-
-                            &:focus{
-                                outline: none;
-                            }
-                        }
-
-                        .point-text{
-                            align-content: center;
-                        }
-
-                        .points-adjust-container{
-                            display: flex;
-                            flex-direction: row;
-                            align-items: center;
-                            button{
-                                padding: 0;
-                                width: 30px;
-                                height: 30px;
-                                border-radius: 50%;
-                                margin: 0 5px;
-                                background: var(--secondary30);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         .secondary-container{
             display: flex;
             gap: 40px;

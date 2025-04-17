@@ -2,15 +2,7 @@
 import { computed, onMounted, onUnmounted, reactive, ref, Ref, watch } from 'vue';
 import { initializeTempName, initializeTempUserId } from '@/lib/utils';
 import axios from 'axios';
-
-interface Player {
-    id: number;
-    userId: string;
-    name: string;
-    points: number;
-    textLocked: boolean;
-    text: string;
-}
+import PlayerList from '@/components/PlayerList.vue';
 
     const props = defineProps({
         propBuzzerLobby:{
@@ -64,6 +56,15 @@ interface Player {
         isHost: false
     })
 
+const buzzerLobbyAPIPayload = computed(() => {
+    return {
+        id: buzzerLobby.id,
+        userId: owningPlayer.userId,
+        buzzerLocked: buzzerLobby.buzzerLocked,
+        buzzedPlayerId: buzzerLobby.buzzedPlayerId
+    }
+})
+
     const players: Ref<Player[]> = ref([]);
     const lobbyExists: Ref<boolean> = ref(false);
     const correctBuzzPoints: Ref<number> = ref(5);
@@ -71,8 +72,10 @@ interface Player {
     const manualChangePoints: Ref<number> = ref(1);
     const hostText: Ref<string> = ref('');
 
-    const channelName = computed(() => lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}` : null);
-    let echoChannel = null;
+    const buzzerLobbyChannelName = computed(() => lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}` : null);
+    const buzzerPlayersChannelName = computed(() => lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}.playerChange` : null);
+    let buzzerLobbyEchoChannel = null;
+    let buzzerPlayersEchoChannel = null;
 
     function initializeLobbyData(){
         if(props.propBuzzerLobby && props.propLobby ){
@@ -100,7 +103,7 @@ interface Player {
             points: player.points,
             textLocked: player.text_locked,
             text: ''
-        }))
+        }));
     }
 
     async function initializePlayer(){
@@ -136,7 +139,14 @@ interface Player {
             const player = players.value[playerIndex];
             player.points = points;
             player.textLocked = textLocked;
-            await axios.patch(`/api/buzzer/${lobby.lobbyCode}/${player.userId}`, player)
+            const playerAPIPayload = {
+                id: player.id,
+                requestingUserId: owningPlayer.userId,
+                name: player.name,
+                points: player.points,
+                textLocked: player.textLocked
+            }
+            await axios.patch(`/api/buzzer/${lobby.lobbyCode}/${player.userId}`, playerAPIPayload)
         }
     }
 
@@ -151,7 +161,7 @@ interface Player {
     async function changeBuzzerLobbyData(buzzerLocked: boolean, buzzedPlayerId: string){
         buzzerLobby.buzzerLocked = buzzerLocked;
         buzzerLobby.buzzedPlayerId = buzzedPlayerId;
-        await axios.patch(`/api/buzzer/${lobby.lobbyCode}`, buzzerLobby);
+        await axios.patch(`/api/buzzer/${lobby.lobbyCode}`, buzzerLobbyAPIPayload.value);
     }
 
     function addPlayer(userId: string, name: string, id: number = -1, points: number = 0, textLocked: boolean = false){
@@ -169,6 +179,20 @@ interface Player {
         players.value.push(newPlayer);
     }
 
+    function handleIncreasePoints(userId:string){
+        const player = getPlayer(userId);
+        if(player != null){
+            changePlayerData(userId, player?.points + manualChangePoints.value, player?.textLocked);
+        }
+    }
+
+    function handleDecreasePoints(userId:string){
+        const player = getPlayer(userId);
+        if(player != null){
+            changePlayerData(userId, player?.points - manualChangePoints.value, player?.textLocked);
+        }
+    }
+
     onMounted(() => {
         owningPlayer.userId = initializeTempUserId();
         owningPlayer.name = initializeTempName();
@@ -177,25 +201,35 @@ interface Player {
             initializePropPlayers(props.propBuzzerLobby?.buzzer_players);
             initializePlayer();
         }
-        console.log("Attempting to subscribe to channel:", channelName.value);
-        echoChannel = window.Echo.channel(channelName.value);
-        console.log(echoChannel)
-        echoChannel.listen('BuzzerLobbyChanged', (event) => {
-            console.log("listened")
-            console.log(event);
+        buzzerLobbyEchoChannel = window.Echo.channel(buzzerLobbyChannelName.value);
+        buzzerLobbyEchoChannel.listen('BuzzerLobbyChanged', (event) => {
+            if(owningPlayer.userId == event.userId){
+                return;
+            }
             buzzerLobby.buzzerLocked = event.buzzerLocked;
             buzzerLobby.buzzedPlayerId = event.buzzedPlayerId;
 
         }).error((error) => {
             console.error(error);
         })
-        console.log(echoChannel)
+        buzzerPlayersEchoChannel = window.Echo.channel(buzzerPlayersChannelName.value);
+        buzzerPlayersEchoChannel.listen('BuzzerPlayerChanged', (event) => {
+            if(owningPlayer.userId == event.userId){
+                return;
+            }
+            initializePropPlayers(event.buzzerLobby?.buzzer_players);
+            console.log(event);
+        })
     })
 
 onUnmounted(() => {
-    if(echoChannel){
-        window.Echo.leave(channelName.value);
-        echoChannel = null;
+    if(buzzerLobbyEchoChannel){
+        window.Echo.leave(buzzerLobbyChannelName.value);
+        buzzerLobbyEchoChannel = null;
+    }
+    if(buzzerPlayersChannel){
+        window.Echo.leave(buzzerPlayersChannelName.value);
+        buzzerPlayersEchoChannel = null;
     }
 })
 </script>
@@ -204,25 +238,11 @@ onUnmounted(() => {
     <section class="buzzer-play-section">
         <h1 class="heading">Buzz</h1>
         <div v-if="lobbyExists" class="buzzer-play-container">
-            <div class="player-list-container card">
-                <h2 class="player-list-heading">Players</h2>
-                <ul class="player-list">
-                    <li class="player-card" v-for="player in players" :key="player.userId">
-                        <span class="name">{{ player.name }}</span>
-                        <div v-if="owningPlayer.isHost" class="host-points-container">
-                            <input v-bind:value="player.points" class="points">
-                            <div class="point-text">Points</div>
-                            <div class="points-adjust-container">
-                                <button>-</button>
-                                <button>+</button>
-                            </div>
-                        </div>
-                        <div v-else>
-                            <div>{{ player.points }} Points</div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+            <PlayerList
+            :players="players"
+            :is-host="owningPlayer.isHost"
+            @decrease-points="handleDecreasePoints"
+            @increase-points="handleIncreasePoints"/>
             <div class="secondary-container">
                 <div class="play-container">
                     <div v-if="!owningPlayer.isHost" class="buzz-container card">
@@ -252,7 +272,7 @@ onUnmounted(() => {
                                             @click="changeBuzzerLobbyData(true, owningPlayer.userId)" v-bind:disabled="buzzerLobby.buzzerLocked"
                                             class="primary">Lock Buzzer</button>
                                         <button
-                                            @click="changeBuzzerLobbyData(false, '')" v-bind:disabled="!buzzerLobby.buzzerLocked"
+                                            @click="changeBuzzerLobbyData(false, owningPlayer.userId)" v-bind:disabled="!buzzerLobby.buzzerLocked"
                                             class="secondary">Reset Buzzer</button>
                                     </div>
                                 </div>
@@ -287,9 +307,9 @@ onUnmounted(() => {
                         </div>
                     </div>
                 </div>
-                <div v-if="owningPlayer.isHost" class="settings-container card">
+                <div class="settings-container card">
                     <h2>Settings</h2>
-                    <div class="points-controls">
+                    <div v-if="owningPlayer.isHost" class="points-controls">
                         <h3 class="heading">Points</h3>
                         <div class="input-container">
                             <div class="input-block">

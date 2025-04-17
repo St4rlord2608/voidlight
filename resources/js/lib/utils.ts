@@ -35,9 +35,18 @@ export function initializeTempName(){
             localStorage.setItem(tempNameKey, tempName)
         }
     }catch(error){
-        console.error('Error accessing localStorage for User ID: ', error)
+        console.error('Error accessing localStorage for User Name: ', error)
     }
     return tempName;
+}
+
+export function setTempName(tempName : string){
+    if(tempName == '')return;
+    try{
+        localStorage.setItem(tempNameKey, tempName)
+    }catch(error){
+        console.error('Error setting localStorage for User Name: ', error)
+    }
 }
 
 export function createRandomId(length = 10) : string{
