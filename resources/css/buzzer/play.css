@@ -16,59 +16,13 @@
             flex-direction: column;
             gap: 50px;
 
-            .buzz-container, .command-container{
+            .command-container{
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 flex-direction: column;
                 justify-content: center;
                 gap: 20px;
                 padding: 30px 20px;
-            }
-
-            .buzz-container{
-                .buzzer{
-                    width: 200px;
-                    height: 200px;
-                    border-radius: 50%;
-                    margin-left: auto;
-                    margin-right: auto;
-                    grid-column: 1 / span 3;
-
-                    &.disabled{
-                        background: var(--button-warning30);
-                        align-content: center;
-                        text-align: center;
-                        cursor: not-allowed;
-                    }
-                }
-
-                .play-buzzed-user{
-                    text-align: center;
-                    grid-column: 1 / span 3;
-                }
-            }
-
-            .text-container{
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-
-                .text-label{
-                    text-align: center;
-                }
-
-                .text{
-                    background: var(--secondary20);
-                    padding: 10px;
-                    border-radius: 10px;
-                    outline: none;
-                    max-height: 300px;
-
-                    &:focus{
-                        outline: none;
-                        border: 1px solid var(--accent-secondary60);
-                    }
-                }
             }
 
             .command-container{
@@ -162,40 +116,6 @@
                                 text-align: center;
                                 align-content: center;
                             }
-                        }
-                    }
-                }
-            }
-        }
-
-        .settings-container{
-            min-width: 400px;
-            width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            padding: 30px 20px;
-
-            .points-controls{
-                border: 1px solid var(--accent-secondary60);
-                padding: 10px 20px;
-                border-radius: 20px;
-                background: var(--secondary15);
-                .input-container{
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-around;
-
-                    .input-block{
-                        display: grid;
-                        grid-template-columns: repeat(2, 1fr);
-                        gap: 10px;
-
-                        input{
-                            width: 5ch;
-                            text-align: center;
-                            margin-left: auto;
-                            margin-right: auto;
                         }
                     }
                 }

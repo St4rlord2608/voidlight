@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Buzzer;
 
-use App\Events\BuzzerLobbyChanged;
+use App\Events\Buzzer\LobbyChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerLobby;
 use App\Models\Lobby\Lobby;
@@ -100,7 +100,7 @@ class BuzzerLobbyAPIController extends Controller
             $buzzerLobby->buzzer_locked = $validated['buzzerLocked'];
             $buzzerLobby->buzzed_player_id = $validated['buzzedPlayerId'];
             $buzzerLobby->save();
-            broadcast(new BuzzerLobbyChanged(
+            broadcast(new LobbyChanged(
                 $lobbyCode,
                 $validated['userId'],
                 $validated['buzzerLocked'],

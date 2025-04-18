@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Buzzer;
 
-use App\Events\BuzzerPlayerChanged;
+use App\Events\Buzzer\PlayerChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerPlayer;
 use App\Models\Lobby\Lobby;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class BuzzerPlayerAPIController extends Controller
@@ -62,7 +61,7 @@ class BuzzerPlayerAPIController extends Controller
             'requestingUserId' => 'required',
             'name' => 'required',
             'points' => 'required',
-            'textLocked' => 'required'
+            'textLocked' => 'required',
         ]);
         $buzzerPlayer = BuzzerPlayer::where('id', $validated['id'])->firstOrFail();
         $buzzerPlayer->points = $validated['points'];
@@ -70,7 +69,7 @@ class BuzzerPlayerAPIController extends Controller
         $buzzerPlayer->save();
         $buzzerLobby = $buzzerPlayer->buzzer_lobby->load('buzzer_players');
         $lobby = $buzzerLobby->lobby;
-        broadcast(new BuzzerPlayerChanged(
+        broadcast(new PlayerChanged(
             $buzzerLobby,
             $lobby->lobby_code,
             $validated['requestingUserId']

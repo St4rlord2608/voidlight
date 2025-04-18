@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Broadcast\PlayerTextAPIController;
 use App\Http\Controllers\Buzzer\BuzzerLobbyAPIController;
 use App\Http\Controllers\Buzzer\BuzzerPlayerAPIController;
 use App\Http\Controllers\Lobby\LobbyAPIController;
@@ -27,3 +28,5 @@ Route::post('/buzzer/{lobbyCode}/{userId}', [BuzzerPlayerAPIController::class, '
 Route::patch('/buzzer/{lobbyCode}/{updateUserId}', [BuzzerPlayerAPIController::class, 'update']);
 
 Route::get('/lobby/{lobbyCode}', [LobbyAPIController::class, 'show']);
+
+Route::patch('/broadcast/playerText/{lobbyCode}/{userId}', [PlayerTextAPIController::class, 'update']);

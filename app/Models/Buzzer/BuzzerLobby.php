@@ -18,4 +18,8 @@ class BuzzerLobby extends Model
     public function lobby(){
         return $this->belongsTo(Lobby::class);
     }
+
+    protected $casts = [
+        'buzzer_locked' => 'boolean'
+    ];
 }

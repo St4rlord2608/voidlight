@@ -13,4 +13,8 @@ class BuzzerPlayer extends Model
     public function buzzer_lobby(){
         return $this->belongsTo(BuzzerLobby::class);
     }
+
+    protected $casts = [
+        'text_locked' => 'boolean'
+    ];
 }
