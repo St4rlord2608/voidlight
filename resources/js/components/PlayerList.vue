@@ -49,6 +49,7 @@
     width: 400px;
     border-radius: 10px;
     padding: 30px 20px;
+    height: fit-content;
 
     .player-list{
         display: flex;

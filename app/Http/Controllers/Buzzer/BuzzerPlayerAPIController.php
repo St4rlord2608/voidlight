@@ -37,6 +37,12 @@ class BuzzerPlayerAPIController extends Controller
                 'buzzer_lobby_id' => $buzzerLobby->id,
                 'name' => $validated['name']
             ]);
+            $buzzerLobby->load('buzzer_players');
+            broadcast(new PlayerChanged(
+                $buzzerLobby,
+                $lobby->lobby_code,
+                $userId
+            ));
             return $buzzerPlayer;
         }catch(\Throwable $ex){
             return response()->json(['message' => 'An unexpected error occurred while creating the player.'], 500);

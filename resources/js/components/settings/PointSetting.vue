@@ -22,30 +22,30 @@
     })
 
     const emit = defineEmits([
-        'update:correctPoints',
-        'update:falsePoints',
-        'update:manualPoints'
+        'update:correct-points',
+        'update:false-points',
+        'update:manual-points'
     ])
 
-    function emitCorrectPoints(event){
+    function emitCorrectPoints(event: any){
         const numericValue = getNumericValue(event);
 
-        emit('update:correctPoints', numericValue)
+        emit('update:correct-points', numericValue)
     }
 
-    function emitFalsePoints(event){
+    function emitFalsePoints(event: any){
         const numericValue = getNumericValue(event);
 
-        emit('update:falsePoints', numericValue)
+        emit('update:false-points', numericValue)
     }
 
-    function emitManualPoints(event){
+    function emitManualPoints(event: any){
         const numericValue = getNumericValue(event);
 
-        emit('update:manualPoints', numericValue)
+        emit('update:manual-points', numericValue)
     }
 
-    function getNumericValue(event){
+    function getNumericValue(event: any){
         const rawValue = event.target.value;
         return rawValue === '' ? null : Number(rawValue);
     }

@@ -8,6 +8,7 @@ import PointSetting from '@/components/settings/PointSetting.vue';
 import Buzzer from '@/components/buzzer/Buzzer.vue';
 import PlayerText from '@/components/input/PlayerText.vue';
 import Echo, { Channel } from 'laravel-echo';
+import HostBuzzControls from '@/components/buzzer/HostBuzzControls.vue';
 
     const props = defineProps({
         propBuzzerLobby:{
@@ -131,9 +132,13 @@ const buzzerLobbyAPIPayload = computed(() => {
 
         buzzerPlayersEchoChannel = echoInstance.channel(buzzerPlayersChannelName.value);
         buzzerPlayersEchoChannel.listen('Buzzer\\PlayerChanged', (event: unknown) => {
+            console.log("Player change")
+            console.log(event)
+            console.log(owningPlayer)
             if(owningPlayer.userId == event.userId){
                 return;
             }
+            console.log(event)
             initializePropPlayers(event.buzzerLobby?.buzzer_players);
             initializePlayer();
         })
@@ -222,6 +227,7 @@ const buzzerLobbyAPIPayload = computed(() => {
     }
 
     async function changeBuzzerLobbyData(buzzerLocked: boolean, buzzedPlayerId: string){
+        console.log("was here");
         buzzerLobby.buzzerLocked = buzzerLocked;
         buzzerLobby.buzzedPlayerId = buzzedPlayerId;
         await axios.patch(`/api/buzzer/${lobby.lobbyCode}`, buzzerLobbyAPIPayload.value);
@@ -258,6 +264,54 @@ const buzzerLobbyAPIPayload = computed(() => {
 
     function handleBuzz(){
         changeBuzzerLobbyData(true, owningPlayer.userId);
+    }
+
+    function handleBuzzChange(newState: boolean){
+        changeBuzzerLobbyData(newState, owningPlayer.userId);
+    }
+
+    async function handleCorrectBuzz(){
+        const player = getPlayer(buzzerLobby.buzzedPlayerId);
+        if(player != null){
+            await changePlayerData(player.userId, player.points + correctBuzzPoints.value, player.textLocked)
+        }
+        await changeBuzzerLobbyData(false, owningPlayer.userId)
+        await unlockAllTexts();
+    }
+
+    async function handleFalseBuzz(){
+        const changePlayers = players.value.filter(p => p.userId != buzzerLobby.buzzedPlayerId);
+
+        if(changePlayers.length === 0){
+            return;
+        }
+
+        changePlayers.forEach(player => {
+            player.points += falseBuzzPoints.value;
+        });
+        await changeBuzzerLobbyData(false, owningPlayer.userId)
+        await unlockAllTexts();
+    }
+
+    async function unlockAllTexts(){
+        if(players.value.length === 0)return;
+        players.value.forEach(player => {
+            player.textLocked = false;
+        });
+        await bulkUpdatePlayers(players.value);
+    }
+
+    async function bulkUpdatePlayers(changePlayers: Player[]){
+        const payload = {
+            players: changePlayers,
+            requestingUserId: owningPlayer.userId
+        };
+        try{
+            const response = await axios.patch(`/api/lobby/${lobby.lobbyCode}/users/bulk-update`, payload);
+            console.log(response)
+        }catch(error: any){
+            console.error(error);
+        }
     }
 
     function handlePlayerTextChange(text: string){
@@ -307,27 +361,13 @@ const buzzerLobbyAPIPayload = computed(() => {
                 <div v-else>
                     <div class="command-container card">
 
-                        <div class="buzz-controls">
-                            <h2 class="heading">Buzzer</h2>
-                            <div class="locked-buzzer-indicator" v-if="buzzerLobby.buzzerLocked">Buzzer is Locked</div>
-                            <div class="unlocked-buzzer-indicator" v-else>Users can buzzer</div>
-                            <div class="buzzed-player">{{ buzzedPlayerName }}</div>
-                            <div class="buzzer-button-container">
-                                <div class="resolve-buzzer-container">
-                                    <button v-bind:disabled="buzzedPlayerName == ''" class="correct-button success">✓</button>
-                                    <button v-bind:disabled="buzzedPlayerName == ''" class="false-button error">✗</button>
-                                </div>
-                                <div class="button-state-container">
-                                    <button
-                                        @click="changeBuzzerLobbyData(true, owningPlayer.userId)" v-bind:disabled="buzzerLobby.buzzerLocked"
-                                        class="primary">Lock Buzzer</button>
-                                    <button
-                                        @click="changeBuzzerLobbyData(false, owningPlayer.userId)" v-bind:disabled="!buzzerLobby.buzzerLocked"
-                                        class="secondary">Reset Buzzer</button>
-                                </div>
-                            </div>
-
-                        </div>
+                        <HostBuzzControls
+                            :buzzer-locked="buzzerLobby.buzzerLocked"
+                            :buzzed-player-name="buzzedPlayerName"
+                            :user-id="owningPlayer.userId"
+                        @update:buzzer-locked="handleBuzzChange"
+                        @correct-buzzer="handleCorrectBuzz"
+                        @false-buzzer="handleFalseBuzz"/>
                         <div class="host-text-container">
                             <div class="host-text">
                                 <h2 class="heading">Text for users</h2>

@@ -28,46 +28,6 @@
             .command-container{
                 row-gap: 50px;
 
-                .buzz-controls{
-                    grid-column: span 3;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 10px;
-
-                    .buzzer-button-container{
-                        display: flex;
-                        flex-direction: row;
-                        gap: 25px;
-                    }
-
-                    .locked-buzzer-indicator, .unlocked-buzzer-indicator{
-                        padding: 10px;
-                        width: fit-content;
-                        border-radius: 10px;
-                    }
-
-                    .locked-buzzer-indicator{
-                        background: red;
-                    }
-
-                    .unlocked-buzzer-indicator{
-                        background: var(--button-success60);
-                    }
-
-                    .resolve-buzzer-container, .button-state-container{
-                        display: flex;
-                        flex-direction: row;
-                        gap: 10px;
-                    }
-
-                    .resolve-buzzer-container{
-                        .correct-button, .false-button{
-                            width: 44px;
-                        }
-                    }
-                }
-
                 .host-text-container{
                     grid-column: span 3;
                 }

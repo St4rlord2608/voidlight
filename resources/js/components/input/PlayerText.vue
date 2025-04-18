@@ -15,14 +15,14 @@
 
      const emit = defineEmits([
          'update:text',
-         'update:textLocked'
+         'update:text-locked'
      ])
 
      function handleLockText(){
-        emit('update:textLocked', true)
+        emit('update:text-locked', true)
      }
 
-     function handleTextInput(event){
+     function handleTextInput(event: any){
         emit('update:text', event.target.value);
      }
 

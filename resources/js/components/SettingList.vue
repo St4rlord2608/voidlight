@@ -17,5 +17,6 @@
         flex-direction: column;
         gap: 20px;
         padding: 30px 20px;
+        height: fit-content;
     }
 </style>
