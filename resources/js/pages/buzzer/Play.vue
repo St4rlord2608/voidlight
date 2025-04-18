@@ -9,6 +9,8 @@ import Buzzer from '@/components/buzzer/Buzzer.vue';
 import PlayerText from '@/components/input/PlayerText.vue';
 import Echo, { Channel } from 'laravel-echo';
 import HostBuzzControls from '@/components/buzzer/HostBuzzControls.vue';
+import HostText from '@/components/input/HostText.vue';
+import PlayerTextList from '@/components/input/PlayerTextList.vue';
 
     const props = defineProps({
         propBuzzerLobby:{
@@ -132,19 +134,20 @@ const buzzerLobbyAPIPayload = computed(() => {
 
         buzzerPlayersEchoChannel = echoInstance.channel(buzzerPlayersChannelName.value);
         buzzerPlayersEchoChannel.listen('Buzzer\\PlayerChanged', (event: unknown) => {
-            console.log("Player change")
-            console.log(event)
-            console.log(owningPlayer)
             if(owningPlayer.userId == event.userId){
                 return;
             }
-            console.log(event)
             initializePropPlayers(event.buzzerLobby?.buzzer_players);
             initializePlayer();
         })
 
         playerTextsEchoChannel = echoInstance.channel(playerTextsChannelName.value);
         playerTextsEchoChannel.listen('Player\\TextChanged', (event: unknown) => {
+            if(owningPlayer.userId == event.userId)return;
+            if(lobby.hostId == event.userId){
+                hostText.value = event.text;
+                return;
+            }
             const player = getPlayer(event.userId);
             if(player != null){
                 player.text = event.text
@@ -227,7 +230,6 @@ const buzzerLobbyAPIPayload = computed(() => {
     }
 
     async function changeBuzzerLobbyData(buzzerLocked: boolean, buzzedPlayerId: string){
-        console.log("was here");
         buzzerLobby.buzzerLocked = buzzerLocked;
         buzzerLobby.buzzedPlayerId = buzzedPlayerId;
         await axios.patch(`/api/buzzer/${lobby.lobbyCode}`, buzzerLobbyAPIPayload.value);
@@ -281,14 +283,13 @@ const buzzerLobbyAPIPayload = computed(() => {
 
     async function handleFalseBuzz(){
         const changePlayers = players.value.filter(p => p.userId != buzzerLobby.buzzedPlayerId);
-
         if(changePlayers.length === 0){
             return;
         }
-
         changePlayers.forEach(player => {
             player.points += falseBuzzPoints.value;
         });
+        await bulkUpdatePlayers(players.value);
         await changeBuzzerLobbyData(false, owningPlayer.userId)
         await unlockAllTexts();
     }
@@ -301,14 +302,21 @@ const buzzerLobbyAPIPayload = computed(() => {
         await bulkUpdatePlayers(players.value);
     }
 
+async function lockAllTexts(){
+    if(players.value.length === 0)return;
+    players.value.forEach(player => {
+        player.textLocked = true;
+    });
+    await bulkUpdatePlayers(players.value);
+}
+
     async function bulkUpdatePlayers(changePlayers: Player[]){
         const payload = {
             players: changePlayers,
             requestingUserId: owningPlayer.userId
         };
         try{
-            const response = await axios.patch(`/api/lobby/${lobby.lobbyCode}/users/bulk-update`, payload);
-            console.log(response)
+            await axios.patch(`/api/lobby/${lobby.lobbyCode}/users/bulk-update`, payload);
         }catch(error: any){
             console.error(error);
         }
@@ -321,6 +329,13 @@ const buzzerLobbyAPIPayload = computed(() => {
     function handlePlayerTextLock(){
         owningPlayer.textLocked = true;
         changePlayerData(owningPlayer.userId, owningPlayer.points, true)
+    }
+
+    function handlePlayerTextLockChange(payload: any){
+        const player = getPlayer(payload.userId);
+        if(player != null){
+            changePlayerData(player.userId, player.points, payload.newState)
+        }
     }
 
     onMounted(() => {
@@ -344,67 +359,44 @@ const buzzerLobbyAPIPayload = computed(() => {
     <section class="buzzer-play-section">
         <h1 class="heading">Buzz</h1>
         <div v-if="lobbyExists" class="buzzer-play-container">
-            <PlayerList
-            :players="players"
-            :is-host="owningPlayer.isHost"
-            @decrease-points="handleDecreasePoints"
-            @increase-points="handleIncreasePoints"/>
+            <PlayerList class="player-list"
+                        :players="players"
+                        :is-host="owningPlayer.isHost"
+                        @decrease-points="handleDecreasePoints"
+                        @increase-points="handleIncreasePoints"/>
+            <setting-list class="settings-list">
+                <point-setting
+                    :is-host="owningPlayer.isHost"
+                    v-model:correct-points="correctBuzzPoints"
+                    v-model:false-points="falseBuzzPoints"
+                    v-model:manual-points="manualChangePoints"/>
+            </setting-list>
 
-            <div class="secondary-container">
-                <div class="play-container">
+            <div class="main-section">
                 <Buzzer v-if="!owningPlayer.isHost" :buzzer-locked="buzzerLobby.buzzerLocked" :buzzed-player-name="buzzedPlayerName" @buzz="handleBuzz"/>
+                <HostText class="card" v-if="!owningPlayer.isHost" v-model:host-text="hostText" :is-host="owningPlayer.isHost"/>
                 <PlayerText v-if="!owningPlayer.isHost"
                             :text="owningPlayer.text"
                             :text-locked="owningPlayer.textLocked"
                             @update:text="handlePlayerTextChange"
                             @update:text-locked="handlePlayerTextLock"/>
-                <div v-else>
-                    <div class="command-container card">
+                <div v-else class="command-container card">
 
-                        <HostBuzzControls
-                            :buzzer-locked="buzzerLobby.buzzerLocked"
-                            :buzzed-player-name="buzzedPlayerName"
-                            :user-id="owningPlayer.userId"
+                    <HostBuzzControls
+                        :buzzer-locked="buzzerLobby.buzzerLocked"
+                        :buzzed-player-name="buzzedPlayerName"
+                        :user-id="owningPlayer.userId"
                         @update:buzzer-locked="handleBuzzChange"
                         @correct-buzzer="handleCorrectBuzz"
                         @false-buzzer="handleFalseBuzz"/>
-                        <div class="host-text-container">
-                            <div class="host-text">
-                                <h2 class="heading">Text for users</h2>
-                                <textarea v-bind:value="hostText"/>
-                            </div>
-                        </div>
-                        <div class="player-text-container">
-                            <h2 class="heading">Texts from Players</h2>
-                            <div class="player-text-lock-button-container">
-                                <button class="warning">Lock all Texts</button>
-                                <button class="secondary">Unlock all Texts</button>
-                            </div>
-                            <div class="text-container">
-                                <div class="player-text" v-for="player in players" :key="player.userId">
-                                    <div class="name-container">
-                                        <label class="name">{{ player.name }}</label>
-                                        <button @click="changePlayerData(player.userId, player.points, false)" v-if="player.textLocked" class="has-tooltip" data-tooltip="unlock text">🔒</button>
-                                        <button @click="changePlayerData(player.userId, player.points, true)" v-if="!player.textLocked" class="has-tooltip" data-tooltip="lock text">🔓</button>
-                                    </div>
-                                    <textarea v-bind:value="player.text"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-
-                        </div>
-                    </div>
+                    <HostText v-model:host-text="hostText" :is-host="owningPlayer.isHost" @update:host-text="changePlayerText"/>
+                    <PlayerTextList :players="players"
+                                    @change-player-text-lock="handlePlayerTextLockChange"
+                                    @lock-all="lockAllTexts"
+                                    @unlock-all="unlockAllTexts"/>
                 </div>
             </div>
-                <setting-list>
-                    <point-setting
-                        :is-host="owningPlayer.isHost"
-                        v-model:correct-points="correctBuzzPoints"
-                        v-model:false-points="falseBuzzPoints"
-                        v-model:manual-points="manualChangePoints"/>
-                </setting-list>
-            </div>
+
         </div>
         <div v-else>
             Lobby does not exist
@@ -413,5 +405,65 @@ const buzzerLobbyAPIPayload = computed(() => {
 </template>
 
 <style scoped>
+    .buzzer-play-section{
+        .buzzer-play-container{
+            display: grid;
+            gap: 40px;
+            grid-template-columns: 400px 1fr;
 
+            .player-list{
+                grid-row: 1;
+                grid-column: 1;
+            }
+
+            .settings-list{
+                grid-row: 2;
+                grid-column: 1;
+            }
+
+            .main-section{
+                grid-row: 1 / span 2;
+                grid-column: 2;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .command-container{
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                flex-direction: column;
+                justify-content: center;
+                gap: 20px;
+                padding: 30px 20px;
+            }
+        }
+    }
+
+    @media screen and (max-width: 1400px){
+
+    }
+
+    @media screen and (max-width: 980px){
+        .buzzer-play-section{
+            .buzzer-play-container{
+                grid-template-columns: 1fr;
+
+                .player-list{
+                    grid-row: 1;
+                    grid-column: 1;
+                }
+
+                .settings-list{
+                    grid-row: 3;
+                    grid-column: 1;
+                }
+
+                .main-section{
+                    grid-row: 2;
+                    grid-column: 1;
+                }
+            }
+        }
+    }
 </style>

@@ -11,8 +11,7 @@
 
 <style scoped>
     .settings-container {
-        min-width: 400px;
-        width: 400px;
+        width: 100%;
         display: flex;
         flex-direction: column;
         gap: 20px;

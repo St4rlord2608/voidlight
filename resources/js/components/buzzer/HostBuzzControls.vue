@@ -38,20 +38,18 @@
 <template>
     <div class="buzz-controls">
         <h2 class="heading">Buzzer</h2>
-        <button
-            @click="handleBuzzerChange(!buzzerLocked)"
-            :class="[buzzerLocked? 'error' : 'success', 'buzzer-state has-tooltip']"
-        :data-tooltip="buzzerLocked? 'unlock buzzer' : 'lock buzzer'">
-            <span class="locked-item">🔒</span>
-            <span class="unlocked-item">🔓</span>
-        </button>
-        <div class="buzzed-player">{{ buzzedPlayerName }}</div>
-        <div class="buzzer-button-container">
-            <div class="resolve-buzzer-container">
-                <button @click="handleCorrectBuzz" v-bind:disabled="buzzedPlayerName == ''" class="correct-button success">✓</button>
-                <button @click="handleFalseBuzz" v-bind:disabled="buzzedPlayerName == ''" class="false-button error">✗</button>
-            </div>
+        <div class="resolve-buzzer-container">
+            <button @click="handleCorrectBuzz" v-bind:disabled="buzzedPlayerName == ''" class="correct-button success">✓</button>
+            <button
+                @click="handleBuzzerChange(!buzzerLocked)"
+                :class="[buzzerLocked? 'error' : 'success', 'buzzer-state has-tooltip']"
+                :data-tooltip="buzzerLocked? 'unlock buzzer' : 'lock buzzer'">
+                <span class="locked-item">🔒</span>
+                <span class="unlocked-item">🔓</span>
+            </button>
+            <button @click="handleFalseBuzz" v-bind:disabled="buzzedPlayerName == ''" class="false-button error">✗</button>
         </div>
+        <div class="buzzed-player">{{ buzzedPlayerName }}</div>
 
     </div>
 </template>
@@ -74,14 +72,14 @@
                 display: none;
             }
 
-            &:hover{
+        /*&:hover{
                 .unlocked-item{
                     display: none;
                 }
                 .locked-item{
                     display: block;
                 }
-            }
+            }*/
         }
 
         &.error{
@@ -89,21 +87,15 @@
                 display: none;
             }
 
-            &:hover{
+            /*&:hover{
                 .unlocked-item{
                     display: block;
                 }
                 .locked-item{
                     display: none;
                 }
-            }
+            }*/
         }
-    }
-
-    .buzzer-button-container{
-        display: flex;
-        flex-direction: row;
-        gap: 25px;
     }
 
     .resolve-buzzer-container{

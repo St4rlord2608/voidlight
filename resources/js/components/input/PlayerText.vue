@@ -34,7 +34,7 @@
 
 <template>
     <div class="text-container">
-        <label class="text-label">Text</label>
+        <h2 class="text-label">Text</h2>
         <div class="text-lock-container">
             <textarea v-bind:readonly="textLocked" @input="handleTextInput" class="text"/>
             <button v-if="!textLocked" @click="handleLockText" class="lock-text">

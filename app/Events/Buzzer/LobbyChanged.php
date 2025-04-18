@@ -15,12 +15,12 @@ class LobbyChanged implements ShouldBroadcastNow
     public string $lobbyCode;
     public string $userId;
     public bool $buzzerLocked;
-    public $buzzedPlayerId;
+    public string $buzzedPlayerId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $lobbyCode, string $userId, bool $buzzerLocked, $buzzedPlayerId)
+    public function __construct(string $lobbyCode, string $userId, bool $buzzerLocked, string $buzzedPlayerId)
     {
         $this->lobbyCode = $lobbyCode;
         $this->userId = $userId;
