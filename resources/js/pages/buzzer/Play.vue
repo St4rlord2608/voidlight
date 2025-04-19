@@ -449,6 +449,7 @@ async function lockAllTexts(){
             <PlayerList class="player-list"
                         :players="players"
                         :is-host="owningPlayer.isHost"
+                        :user-id="owningPlayer.userId"
                         :show-points="buzzerLobby.showPoints"
                         @decrease-points="handleDecreasePoints"
                         @increase-points="handleIncreasePoints"/>

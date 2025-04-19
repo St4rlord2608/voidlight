@@ -3,6 +3,7 @@
     interface Props{
         players: Player[];
         isHost: boolean;
+        userId;
         showPoints: boolean;
     }
 
@@ -26,7 +27,7 @@
     <div class="player-list-container card">
         <h2 class="player-list-heading">Players</h2>
         <ul class="player-list">
-            <li :class="[isHost ? '' : 'player', 'player-card']" v-for="player in players" :key="player.userId">
+            <li :class="[isHost ? '' : 'player', userId == player.userId? 'active-player' : '', 'player-card']" v-for="player in players" :key="player.userId">
                 <button v-if="isHost" class="adjust-button" @click="emitDecreasePoints(player.userId)">-</button>
                 <div class="content">
                     <span class="name">{{ player.name }}</span>
@@ -63,6 +64,14 @@
             justify-content: space-between;
             background: var(--secondary15);
             overflow: hidden;
+
+            &.active-player{
+                background-image: linear-gradient(
+                to right,
+                var(--secondary80) 10%,
+                var(--secondary15) 50%
+                );
+            }
 
             &.player{
                 padding: 10px 20px;
