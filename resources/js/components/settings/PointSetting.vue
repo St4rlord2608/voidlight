@@ -1,4 +1,6 @@
 ﻿<script setup lang="ts">
+    import ToggleSwitch from '@/components/general/toggleSwitch.vue';
+
     const props = defineProps({
         isHost: {
             type: Boolean,
@@ -18,13 +20,19 @@
         manualPoints: {
             type: Number,
             default: 1
+        },
+
+        showPoints: {
+            type: Boolean,
+            required: true
         }
     })
 
     const emit = defineEmits([
         'update:correct-points',
         'update:false-points',
-        'update:manual-points'
+        'update:manual-points',
+        'update:show-points'
     ])
 
     function emitCorrectPoints(event: any){
@@ -49,6 +57,10 @@
         const rawValue = event.target.value;
         return rawValue === '' ? null : Number(rawValue);
     }
+
+    function emitShowPoints(newState: boolean){
+        emit('update:show-points', newState)
+    }
 </script>
 
 <template>
@@ -66,6 +78,10 @@
             <div class="input-block">
                 <label class="has-tooltip" data-tooltip="Points for manual point change">Manual</label>
                 <input min="0" type="number" @input="emitManualPoints" v-bind:value="manualPoints" />
+            </div>
+            <div class="input-block">
+                <label class="checkbox-label" for="show-points">Show points</label>
+                <ToggleSwitch :model-value="showPoints" @update:model-value="emitShowPoints" input-id="show-points"/>
             </div>
         </div>
     </div>
@@ -86,6 +102,11 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
+
+            .checkbox-label{
+                width: fit-content;
+                cursor: pointer;
+            }
 
             input{
                 width: 5ch;

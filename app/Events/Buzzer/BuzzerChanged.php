@@ -4,30 +4,33 @@ namespace App\Events\Buzzer;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class LobbyChanged implements ShouldBroadcastNow
+class BuzzerChanged implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $lobbyCode;
+    public bool $wasBuzzerLock;
+    public bool $buzzerResult;
+    public bool $buzzerCanceled = false;
     public string $userId;
-    public bool $buzzerLocked;
-    public ?string $buzzedPlayerId;
-    public bool $showPoints;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $lobbyCode, string $userId, bool $buzzerLocked, ?string $buzzedPlayerId, string $showPoints)
+    public function __construct(string $lobbyCode, bool $wasBuzzerLock, bool $buzzerResult, bool $buzzerCanceled, string $userId)
     {
         $this->lobbyCode = $lobbyCode;
+        $this->wasBuzzerLock = $wasBuzzerLock;
+        $this->buzzerResult = $buzzerResult;
+        $this->buzzerCanceled = $buzzerCanceled;
         $this->userId = $userId;
-        $this->buzzerLocked = $buzzerLocked;
-        $this->buzzedPlayerId = $buzzedPlayerId;
-        $this->showPoints = $showPoints;
     }
 
     /**
@@ -38,7 +41,7 @@ class LobbyChanged implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('buzzer.'.$this->lobbyCode),
+            new Channel('buzzer.'.$this->lobbyCode.'.buzzerChange'),
         ];
     }
 }

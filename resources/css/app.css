@@ -264,142 +264,147 @@
     --accent-secondary100: hsl(22 30% 54% / 100%);
 
     /* --- Button Primary Color Variables --- */
-    /* --- Based on HEX: #000000 (HSL: 0 0% 0%) --- */
-    --button-primary5:   hsl(0 0% 0% / 5%);
-    --button-primary10:  hsl(0 0% 0% / 10%);
-    --button-primary15:  hsl(0 0% 0% / 15%);
-    --button-primary20:  hsl(0 0% 0% / 20%);
-    --button-primary25:  hsl(0 0% 0% / 25%);
-    --button-primary30:  hsl(0 0% 0% / 30%);
-    --button-primary35:  hsl(0 0% 0% / 35%);
-    --button-primary40:  hsl(0 0% 0% / 40%);
-    --button-primary45:  hsl(0 0% 0% / 45%);
-    --button-primary50:  hsl(0 0% 0% / 50%);
-    --button-primary55:  hsl(0 0% 0% / 55%);
-    --button-primary60:  hsl(0 0% 0% / 60%);
-    --button-primary65:  hsl(0 0% 0% / 65%);
-    --button-primary70:  hsl(0 0% 0% / 70%);
-    --button-primary75:  hsl(0 0% 0% / 75%);
-    --button-primary80:  hsl(0 0% 0% / 80%);
-    --button-primary85:  hsl(0 0% 0% / 85%);
-    --button-primary90:  hsl(0 0% 0% / 90%);
-    --button-primary95:  hsl(0 0% 0% / 95%);
-    --button-primary100: hsl(0 0% 0% / 100%);
+    /* --- Based on a brighter version of Accent Primary: HSL(182 65% 65%) --- */
+    /* --- Original Accent Primary: hsl(182 58% 60%) --- */
+    --button-primary5:   hsl(182 65% 65% / 5%);
+    --button-primary10:  hsl(182 65% 65% / 10%);
+    --button-primary15:  hsl(182 65% 65% / 15%);
+    --button-primary20:  hsl(182 65% 65% / 20%);
+    --button-primary25:  hsl(182 65% 65% / 25%);
+    --button-primary30:  hsl(182 65% 65% / 30%);
+    --button-primary35:  hsl(182 65% 65% / 35%);
+    --button-primary40:  hsl(182 65% 65% / 40%);
+    --button-primary45:  hsl(182 65% 65% / 45%);
+    --button-primary50:  hsl(182 65% 65% / 50%);
+    --button-primary55:  hsl(182 65% 65% / 55%);
+    --button-primary60:  hsl(182 65% 65% / 60%);
+    --button-primary65:  hsl(182 65% 65% / 65%);
+    --button-primary70:  hsl(182 65% 65% / 70%);
+    --button-primary75:  hsl(182 65% 65% / 75%);
+    --button-primary80:  hsl(182 65% 65% / 80%);
+    --button-primary85:  hsl(182 65% 65% / 85%);
+    --button-primary90:  hsl(182 65% 65% / 90%);
+    --button-primary95:  hsl(182 65% 65% / 95%);
+    --button-primary100: hsl(182 65% 65% / 100%); /* Main CTA, bright cyan */
 
     /* --- Button Secondary Color Variables --- */
-    /* --- Based on HEX: #6B7280 (HSL: 220 8% 46%) --- */
-    --button-secondary5:   hsl(220 8% 46% / 5%);
-    --button-secondary10:  hsl(220 8% 46% / 10%);
-    --button-secondary15:  hsl(220 8% 46% / 15%);
-    --button-secondary20:  hsl(220 8% 46% / 20%);
-    --button-secondary25:  hsl(220 8% 46% / 25%);
-    --button-secondary30:  hsl(220 8% 46% / 30%);
-    --button-secondary35:  hsl(220 8% 46% / 35%);
-    --button-secondary40:  hsl(220 8% 46% / 40%);
-    --button-secondary45:  hsl(220 8% 46% / 45%);
-    --button-secondary50:  hsl(220 8% 46% / 50%);
-    --button-secondary55:  hsl(220 8% 46% / 55%);
-    --button-secondary60:  hsl(220 8% 46% / 60%);
-    --button-secondary65:  hsl(220 8% 46% / 65%);
-    --button-secondary70:  hsl(220 8% 46% / 70%);
-    --button-secondary75:  hsl(220 8% 46% / 75%);
-    --button-secondary80:  hsl(220 8% 46% / 80%);
-    --button-secondary85:  hsl(220 8% 46% / 85%);
-    --button-secondary90:  hsl(220 8% 46% / 90%);
-    --button-secondary95:  hsl(220 8% 46% / 95%);
-    --button-secondary100: hsl(220 8% 46% / 100%);
+    /* --- Based on Accent Secondary: HSL(22 30% 54%) --- */
+    --button-secondary5:   hsl(22 30% 54% / 5%);
+    --button-secondary10:  hsl(22 30% 54% / 10%);
+    --button-secondary15:  hsl(22 30% 54% / 15%);
+    --button-secondary20:  hsl(22 30% 54% / 20%);
+    --button-secondary25:  hsl(22 30% 54% / 25%);
+    --button-secondary30:  hsl(22 30% 54% / 30%);
+    --button-secondary35:  hsl(22 30% 54% / 35%);
+    --button-secondary40:  hsl(22 30% 54% / 40%);
+    --button-secondary45:  hsl(22 30% 54% / 45%);
+    --button-secondary50:  hsl(22 30% 54% / 50%);
+    --button-secondary55:  hsl(22 30% 54% / 55%);
+    --button-secondary60:  hsl(22 30% 54% / 60%);
+    --button-secondary65:  hsl(22 30% 54% / 65%);
+    --button-secondary70:  hsl(22 30% 54% / 70%);
+    --button-secondary75:  hsl(22 30% 54% / 75%);
+    --button-secondary80:  hsl(22 30% 54% / 80%);
+    --button-secondary85:  hsl(22 30% 54% / 85%);
+    --button-secondary90:  hsl(22 30% 54% / 90%);
+    --button-secondary95:  hsl(22 30% 54% / 95%);
+    --button-secondary100: hsl(22 30% 54% / 100%); /* Muted orange-brown, less prominent */
 
     /* --- Button Warning Color Variables --- */
-    /* --- Based on HEX: #B45309 (HSL: 30 88% 39%) --- */
-    --button-warning5:   hsl(30 88% 39% / 5%);
-    --button-warning10:  hsl(30 88% 39% / 10%);
-    --button-warning15:  hsl(30 88% 39% / 15%);
-    --button-warning20:  hsl(30 88% 39% / 20%);
-    --button-warning25:  hsl(30 88% 39% / 25%);
-    --button-warning30:  hsl(30 88% 39% / 30%);
-    --button-warning35:  hsl(30 88% 39% / 35%);
-    --button-warning40:  hsl(30 88% 39% / 40%);
-    --button-warning45:  hsl(30 88% 39% / 45%);
-    --button-warning50:  hsl(30 88% 39% / 50%);
-    --button-warning55:  hsl(30 88% 39% / 55%);
-    --button-warning60:  hsl(30 88% 39% / 60%);
-    --button-warning65:  hsl(30 88% 39% / 65%);
-    --button-warning70:  hsl(30 88% 39% / 70%);
-    --button-warning75:  hsl(30 88% 39% / 75%);
-    --button-warning80:  hsl(30 88% 39% / 80%);
-    --button-warning85:  hsl(30 88% 39% / 85%);
-    --button-warning90:  hsl(30 88% 39% / 90%);
-    --button-warning95:  hsl(30 88% 39% / 95%);
-    --button-warning100: hsl(30 88% 39% / 100%);
+    /* --- Based on a brighter, more saturated version of Accent Secondary: HSL(35 65% 60%) --- */
+    /* --- Original Accent Secondary: hsl(22 30% 54%) --- */
+    --button-warning5:   hsl(35 65% 60% / 5%);
+    --button-warning10:  hsl(35 65% 60% / 10%);
+    --button-warning15:  hsl(35 65% 60% / 15%);
+    --button-warning20:  hsl(35 65% 60% / 20%);
+    --button-warning25:  hsl(35 65% 60% / 25%);
+    --button-warning30:  hsl(35 65% 60% / 30%);
+    --button-warning35:  hsl(35 65% 60% / 35%);
+    --button-warning40:  hsl(35 65% 60% / 40%);
+    --button-warning45:  hsl(35 65% 60% / 45%);
+    --button-warning50:  hsl(35 65% 60% / 50%);
+    --button-warning55:  hsl(35 65% 60% / 55%);
+    --button-warning60:  hsl(35 65% 60% / 60%);
+    --button-warning65:  hsl(35 65% 60% / 65%);
+    --button-warning70:  hsl(35 65% 60% / 70%);
+    --button-warning75:  hsl(35 65% 60% / 75%);
+    --button-warning80:  hsl(35 65% 60% / 80%);
+    --button-warning85:  hsl(35 65% 60% / 85%);
+    --button-warning90:  hsl(35 65% 60% / 90%);
+    --button-warning95:  hsl(35 65% 60% / 95%);
+    --button-warning100: hsl(35 65% 60% / 100%); /* Clear warning, warm orange/yellow */
 
     /* --- Button Info Color Variables --- */
-    /* --- Based on HEX: #2563EB (HSL: 221 83% 53%) --- */
-    --button-info5:   hsl(221 83% 53% / 5%);
-    --button-info10:  hsl(221 83% 53% / 10%);
-    --button-info15:  hsl(221 83% 53% / 15%);
-    --button-info20:  hsl(221 83% 53% / 20%);
-    --button-info25:  hsl(221 83% 53% / 25%);
-    --button-info30:  hsl(221 83% 53% / 30%);
-    --button-info35:  hsl(221 83% 53% / 35%);
-    --button-info40:  hsl(221 83% 53% / 40%);
-    --button-info45:  hsl(221 83% 53% / 45%);
-    --button-info50:  hsl(221 83% 53% / 50%);
-    --button-info55:  hsl(221 83% 53% / 55%);
-    --button-info60:  hsl(221 83% 53% / 60%);
-    --button-info65:  hsl(221 83% 53% / 65%);
-    --button-info70:  hsl(221 83% 53% / 70%);
-    --button-info75:  hsl(221 83% 53% / 75%);
-    --button-info80:  hsl(221 83% 53% / 80%);
-    --button-info85:  hsl(221 83% 53% / 85%);
-    --button-info90:  hsl(221 83% 53% / 90%);
-    --button-info95:  hsl(221 83% 53% / 95%);
-    --button-info100: hsl(221 83% 53% / 100%);
+    /* --- Based on a slightly bluer, brighter version of Primary: HSL(200 60% 68%) --- */
+    /* --- Original Primary: hsl(183 46% 72%) --- */
+    --button-info5:   hsl(200 60% 68% / 5%);
+    --button-info10:  hsl(200 60% 68% / 10%);
+    --button-info15:  hsl(200 60% 68% / 15%);
+    --button-info20:  hsl(200 60% 68% / 20%);
+    --button-info25:  hsl(200 60% 68% / 25%);
+    --button-info30:  hsl(200 60% 68% / 30%);
+    --button-info35:  hsl(200 60% 68% / 35%);
+    --button-info40:  hsl(200 60% 68% / 40%);
+    --button-info45:  hsl(200 60% 68% / 45%);
+    --button-info50:  hsl(200 60% 68% / 50%);
+    --button-info55:  hsl(200 60% 68% / 55%);
+    --button-info60:  hsl(200 60% 68% / 60%);
+    --button-info65:  hsl(200 60% 68% / 65%);
+    --button-info70:  hsl(200 60% 68% / 70%);
+    --button-info75:  hsl(200 60% 68% / 75%);
+    --button-info80:  hsl(200 60% 68% / 80%);
+    --button-info85:  hsl(200 60% 68% / 85%);
+    --button-info90:  hsl(200 60% 68% / 90%);
+    --button-info95:  hsl(200 60% 68% / 95%);
+    --button-info100: hsl(200 60% 68% / 100%); /* Informational blue/cyan, distinct from primary */
 
     /* --- Button Success Color Variables --- */
-    /* --- Based on HEX: #006400 --- */
-    --button-success5:   hsl(120 100% 20% / 5%);
-    --button-success10:  hsl(120 100% 20% / 10%);
-    --button-success15:  hsl(120 100% 20% / 15%);
-    --button-success20:  hsl(120 100% 20% / 20%);
-    --button-success25:  hsl(120 100% 20% / 25%);
-    --button-success30:  hsl(120 100% 20% / 30%);
-    --button-success35:  hsl(120 100% 20% / 35%);
-    --button-success40:  hsl(120 100% 20% / 40%);
-    --button-success45:  hsl(120 100% 20% / 45%);
-    --button-success50:  hsl(120 100% 20% / 50%);
-    --button-success55:  hsl(120 100% 20% / 55%);
-    --button-success60:  hsl(120 100% 20% / 60%);
-    --button-success65:  hsl(120 100% 20% / 65%);
-    --button-success70:  hsl(120 100% 20% / 70%);
-    --button-success75:  hsl(120 100% 20% / 75%);
-    --button-success80:  hsl(120 100% 20% / 80%);
-    --button-success85:  hsl(120 100% 20% / 85%);
-    --button-success90:  hsl(120 100% 20% / 90%);
-    --button-success95:  hsl(120 100% 20% / 95%);
-    --button-success100: hsl(120 100% 20% / 100%); /* Base HSL */
+    /* --- Based on a greener version of Primary/Accent Primary: HSL(160 55% 55%) --- */
+    /* --- Original Primary: hsl(183 46% 72%) --- */
+    --button-success5:   hsl(160 55% 55% / 5%);
+    --button-success10:  hsl(160 55% 55% / 10%);
+    --button-success15:  hsl(160 55% 55% / 15%);
+    --button-success20:  hsl(160 55% 55% / 20%);
+    --button-success25:  hsl(160 55% 55% / 25%);
+    --button-success30:  hsl(160 55% 55% / 30%);
+    --button-success35:  hsl(160 55% 55% / 35%);
+    --button-success40:  hsl(160 55% 55% / 40%);
+    --button-success45:  hsl(160 55% 55% / 45%);
+    --button-success50:  hsl(160 55% 55% / 50%);
+    --button-success55:  hsl(160 55% 55% / 55%);
+    --button-success60:  hsl(160 55% 55% / 60%);
+    --button-success65:  hsl(160 55% 55% / 65%);
+    --button-success70:  hsl(160 55% 55% / 70%);
+    --button-success75:  hsl(160 55% 55% / 75%);
+    --button-success80:  hsl(160 55% 55% / 80%);
+    --button-success85:  hsl(160 55% 55% / 85%);
+    --button-success90:  hsl(160 55% 55% / 90%);
+    --button-success95:  hsl(160 55% 55% / 95%);
+    --button-success100: hsl(160 55% 55% / 100%); /* Success indicator, greenish-cyan */
 
     /* --- Button Error Color Variables --- */
-    /* --- Based on HEX: #DC2626 (HSL: 0 72% 47%) --- */
-    --button-error5:   hsl(0 72% 47% / 5%);
-    --button-error10:  hsl(0 72% 47% / 10%);
-    --button-error15:  hsl(0 72% 47% / 15%);
-    --button-error20:  hsl(0 72% 47% / 20%);
-    --button-error25:  hsl(0 72% 47% / 25%);
-    --button-error30:  hsl(0 72% 47% / 30%);
-    --button-error35:  hsl(0 72% 47% / 35%);
-    --button-error40:  hsl(0 72% 47% / 40%);
-    --button-error45:  hsl(0 72% 47% / 45%);
-    --button-error50:  hsl(0 72% 47% / 50%);
-    --button-error55:  hsl(0 72% 47% / 55%);
-    --button-error60:  hsl(0 72% 47% / 60%);
-    --button-error65:  hsl(0 72% 47% / 65%);
-    --button-error70:  hsl(0 72% 47% / 70%);
-    --button-error75:  hsl(0 72% 47% / 75%);
-    --button-error80:  hsl(0 72% 47% / 80%);
-    --button-error85:  hsl(0 72% 47% / 85%);
-    --button-error90:  hsl(0 72% 47% / 90%);
-    --button-error95:  hsl(0 72% 47% / 95%);
-    --button-error100: hsl(0 72% 47% / 100%);
+    /* --- Based on a brighter, more saturated version of Secondary: HSL(6 68% 58%) --- */
+    /* --- Original Secondary: hsl(6 30% 34%) --- */
+    --button-error5:   hsl(6 68% 58% / 5%);
+    --button-error10:  hsl(6 68% 58% / 10%);
+    --button-error15:  hsl(6 68% 58% / 15%);
+    --button-error20:  hsl(6 68% 58% / 20%);
+    --button-error25:  hsl(6 68% 58% / 25%);
+    --button-error30:  hsl(6 68% 58% / 30%);
+    --button-error35:  hsl(6 68% 58% / 35%);
+    --button-error40:  hsl(6 68% 58% / 40%);
+    --button-error45:  hsl(6 68% 58% / 45%);
+    --button-error50:  hsl(6 68% 58% / 50%);
+    --button-error55:  hsl(6 68% 58% / 55%);
+    --button-error60:  hsl(6 68% 58% / 60%);
+    --button-error65:  hsl(6 68% 58% / 65%);
+    --button-error70:  hsl(6 68% 58% / 70%);
+    --button-error75:  hsl(6 68% 58% / 75%);
+    --button-error80:  hsl(6 68% 58% / 80%);
+    --button-error85:  hsl(6 68% 58% / 85%);
+    --button-error90:  hsl(6 68% 58% / 90%);
+    --button-error95:  hsl(6 68% 58% / 95%);
+    --button-error100: hsl(6 68% 58% / 100%); /* Error indicator, uses related red hue */
 }
 
 /*.dark {

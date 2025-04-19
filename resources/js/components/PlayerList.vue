@@ -3,6 +3,7 @@
     interface Props{
         players: Player[];
         isHost: boolean;
+        showPoints: boolean;
     }
 
     const props = withDefaults(defineProps<Props>(), {})
@@ -33,7 +34,7 @@
                         <input v-bind:value="player.points" class="points">
                         <div class="point-text">Points</div>
                     </div>
-                    <div v-else class="player-points">{{ player.points }} Points</div>
+                    <div v-else-if="showPoints" class="player-points">{{ player.points }} Points</div>
                 </div>
                 <button v-if="isHost" class="adjust-button" @click="emitIncreasePoints(player.userId)">+</button>
             </li>
@@ -70,6 +71,11 @@
             .adjust-button{
                 background: var(--secondary30);
                 border-radius: 0;
+
+                &:hover{
+                    background: var(--secondary80);
+                    box-shadow: -2px 4px 73px -2px var(--secondary60);
+                }
             }
 
             .content{

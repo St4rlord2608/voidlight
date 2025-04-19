@@ -24,7 +24,7 @@
     <div class="host-text-container">
         <div class="host-text">
             <h2 class="heading">{{ isHost ? 'Text for users' : 'Text from host'}}</h2>
-            <textarea v-bind:disabled="!isHost" @input="handleTextChange" v-bind:value="hostText"/>
+            <textarea v-bind:readonly="!isHost" @input="handleTextChange" v-bind:value="hostText"/>
         </div>
     </div>
 </template>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Buzzer;
 
+use App\Enums\LobbyType;
 use App\Events\Buzzer\LobbyChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerLobby;
@@ -36,9 +37,9 @@ class BuzzerLobbyAPIController extends Controller
                 'hostId' => 'required'
             ]);
             $buzzerLobby = DB::transaction(function () use ($validated) {
-                $lobby = $this->lobbyService->createLobby($validated['hostId']);
+                $lobby = $this->lobbyService->createLobby($validated['hostId'], LobbyType::BUZZER);
                 $createdBuzzerLobby = BuzzerLobby::create([
-                    'lobby_id' => $lobby->id
+                    'lobby_id' => $lobby->id,
                 ]);
                 if(!$createdBuzzerLobby){
                     throw new \Exception("Failed to create buzzer lobby");
@@ -88,9 +89,13 @@ class BuzzerLobbyAPIController extends Controller
             'id' => 'required',
             'userId' => 'required',
             'buzzerLocked' => 'required|boolean',
-            'buzzedPlayerId' => 'present'
+            'buzzedPlayerId' => 'present',
+            'showPoints' => 'required|boolean',
         ]);
         try{
+            $settings = [
+                'show_points' => $validated['showPoints']
+            ];
             $buzzerLobby = BuzzerLobby::where('id', $validated['id'])->firstOrFail();
             $lobby = $buzzerLobby->lobby;
             $hostId = $lobby->host_id;
@@ -99,12 +104,14 @@ class BuzzerLobbyAPIController extends Controller
             }
             $buzzerLobby->buzzer_locked = $validated['buzzerLocked'];
             $buzzerLobby->buzzed_player_id = $validated['buzzedPlayerId'];
+            $buzzerLobby->settings = $settings;
             $buzzerLobby->save();
             broadcast(new LobbyChanged(
                 $lobbyCode,
                 $validated['userId'],
                 $validated['buzzerLocked'],
-                $validated['buzzedPlayerId']
+                $validated['buzzedPlayerId'],
+                $validated['showPoints']
             ));
         }catch(\Throwable $e){
             return response()->json(['message' => 'Unexpected error: '.$e->getMessage()], 500);

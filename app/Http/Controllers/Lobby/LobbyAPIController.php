@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Lobby;
 
+use App\Enums\LobbyType;
 use App\Http\Controllers\Controller;
 use App\Models\Lobby\Lobby;
 use App\Services\Lobby\LobbyService;
@@ -30,7 +31,7 @@ class LobbyAPIController extends Controller
         $request->validate([
             'hostId' => 'required'
         ]);
-        return $this->lobbyService->createLobby($request->get('hostId'));
+        return $this->lobbyService->createLobby($request->get('hostId'), LobbyType::QUIZ_POKER);
     }
 
     /**

@@ -1,15 +1,17 @@
 <?php
 namespace App\Services\Lobby;
 
+use App\Enums\LobbyType;
 use App\Models\Lobby\Lobby;
 
 class LobbyService
 {
-    public function createLobby($hostId) : Lobby{
+    public function createLobby(string $hostId, LobbyType $lobbyType) : Lobby{
         $lobbyCode = $this->CreateValidLobbyCode();
         $lobby = Lobby::create([
             'lobby_code' => $lobbyCode,
-            'host_id' => $hostId
+            'host_id' => $hostId,
+            'lobby_type' => $lobbyType->label()
         ]);
         return $lobby;
     }

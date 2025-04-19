@@ -1,5 +1,7 @@
 ﻿<script setup lang="ts">
      import { onMounted } from 'vue';
+     import Unlock from '@/components/icons/unlock.vue';
+     import Lock from '@/components/icons/lock.vue';
 
      const props = defineProps({
          text: {
@@ -38,10 +40,10 @@
         <div class="text-lock-container">
             <textarea v-bind:readonly="textLocked" @input="handleTextInput" class="text"/>
             <button v-if="!textLocked" @click="handleLockText" class="lock-text">
-                <span class="unlocked-item">🔓</span>
-                <span class="locked-item">🔒</span>
+                <span class="unlocked-item"><unlock/></span>
+                <span class="locked-item"><lock/></span>
             </button>
-            <div v-else class="locked-text">🔒</div>
+            <div v-else class="locked-text"><lock/></div>
         </div>
 
     </div>

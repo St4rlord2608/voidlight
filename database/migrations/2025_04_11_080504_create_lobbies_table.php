@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('host_id');
             $table->string('lobby_code')->unique();
+            $table->string('lobby_type');
             $table->timestamps();
+            $table->index('lobby_type');
+            $table->index('host_id');
         });
     }
 

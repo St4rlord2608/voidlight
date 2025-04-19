@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, Ref } from 'vue';
-import { initializeTempName, initializeTempUserId } from '@/lib/utils';
+import { initializeTempName, initializeTempUserId, playBuzzSound, playCorrectSound, playFalseSound } from '@/lib/utils';
 import axios from 'axios';
 import PlayerList from '@/components/PlayerList.vue';
 import SettingList from '@/components/SettingList.vue';
@@ -11,6 +11,7 @@ import Echo, { Channel } from 'laravel-echo';
 import HostBuzzControls from '@/components/buzzer/HostBuzzControls.vue';
 import HostText from '@/components/input/HostText.vue';
 import PlayerTextList from '@/components/input/PlayerTextList.vue';
+import VolumeSetting from '@/components/settings/VolumeSetting.vue';
 
     const props = defineProps({
         propBuzzerLobby:{
@@ -33,7 +34,8 @@ import PlayerTextList from '@/components/input/PlayerTextList.vue';
         id: -1,
         buzzerLocked: false,
         buzzedPlayerId: '',
-        loaded: false
+        loaded: false,
+        showPoints: true,
     })
 
     const buzzedPlayerName = computed(() => {
@@ -54,7 +56,7 @@ import PlayerTextList from '@/components/input/PlayerTextList.vue';
         id: -1,
         hostId: '',
         lobbyCode: '',
-        loaded: false
+        loaded: false,
     })
 
     const owningPlayer = reactive({
@@ -72,7 +74,8 @@ const buzzerLobbyAPIPayload = computed(() => {
         id: buzzerLobby.id,
         userId: owningPlayer.userId,
         buzzerLocked: buzzerLobby.buzzerLocked,
-        buzzedPlayerId: buzzerLobby.buzzedPlayerId
+        buzzedPlayerId: buzzerLobby.buzzedPlayerId,
+        showPoints: buzzerLobby.showPoints
     }
 })
 
@@ -82,19 +85,27 @@ const buzzerLobbyAPIPayload = computed(() => {
     const falseBuzzPoints: Ref<number> = ref(1);
     const manualChangePoints: Ref<number> = ref(1);
     const hostText: Ref<string> = ref('');
+    const buzzVolume : Ref<number> = ref(10);
 
     const buzzerLobbyChannelName = computed(() => lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}` : null);
     const buzzerPlayersChannelName = computed(() => lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}.playerChange` : null);
     const playerTextsChannelName = computed(() => lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}.playerTextChange` : null);
+    const buzzerChannelName = computed(() => lobby.lobbyCode? `buzzer.${lobby.lobbyCode}.buzzerChange` : null);
     let buzzerLobbyEchoChannel: Channel | null = null;
     let buzzerPlayersEchoChannel: Channel | null = null;
     let playerTextsEchoChannel: Channel | null = null;
+    let buzzerEchoChannel: Channel | null = null;
 
     function initializeLobbyData(){
         if(props.propBuzzerLobby && props.propLobby ){
             buzzerLobby.id = props.propBuzzerLobby.id;
             buzzerLobby.buzzerLocked = props.propBuzzerLobby.buzzer_locked;
             buzzerLobby.buzzedPlayerId = props.propBuzzerLobby.buzzed_player_id;
+            if(props.propBuzzerLobby.settings.show_points != null){
+                buzzerLobby.showPoints = props.propBuzzerLobby.settings.show_points
+            }else{
+                buzzerLobby.showPoints = true;
+            }
 
             lobby.id = props.propLobby.id;
             lobby.hostId = props.propLobby.host_id;
@@ -121,38 +132,68 @@ const buzzerLobbyAPIPayload = computed(() => {
 
     function initializeBroadcastListeners(){
         buzzerLobbyEchoChannel = echoInstance.channel(buzzerLobbyChannelName.value);
-        buzzerLobbyEchoChannel.listen('Buzzer\\LobbyChanged', (event: unknown) => {
-            if(owningPlayer.userId == event.userId){
-                return;
-            }
-            buzzerLobby.buzzerLocked = event.buzzerLocked;
-            buzzerLobby.buzzedPlayerId = event.buzzedPlayerId;
+        if(buzzerLobbyEchoChannel != null){
+            buzzerLobbyEchoChannel.listen('Buzzer\\LobbyChanged', (event: any) => {
+                if(owningPlayer.userId == event.userId){
+                    return;
+                }
+                buzzerLobby.buzzerLocked = event.buzzerLocked;
+                buzzerLobby.buzzedPlayerId = event.buzzedPlayerId;
+                buzzerLobby.showPoints = event.showPoints;
 
-        }).error((error: unknown) => {
-            console.log(error);
-        })
-
+            }).error((error: unknown) => {
+                console.error(error);
+            })
+        }
         buzzerPlayersEchoChannel = echoInstance.channel(buzzerPlayersChannelName.value);
-        buzzerPlayersEchoChannel.listen('Buzzer\\PlayerChanged', (event: unknown) => {
-            if(owningPlayer.userId == event.userId){
-                return;
-            }
-            initializePropPlayers(event.buzzerLobby?.buzzer_players);
-            initializePlayer();
-        })
-
+        if(buzzerPlayersEchoChannel != null){
+            buzzerPlayersEchoChannel.listen('Buzzer\\PlayerChanged', (event: any) => {
+                if(owningPlayer.userId == event.userId){
+                    return;
+                }
+                event.buzzerLobby?.buzzer_players.forEach(changedPlayer => {
+                    const existingPlayer = getPlayer(changedPlayer.user_id);
+                    if(existingPlayer != null){
+                        existingPlayer.points = changedPlayer.points;
+                        existingPlayer.textLocked = changedPlayer.text_locked;
+                    }else{
+                        addPlayer(changedPlayer.user_id, changedPlayer.name, changedPlayer.id, changedPlayer.points, changedPlayer.text_locked);
+                    }
+                    if(changedPlayer.user_id == owningPlayer.userId){
+                        owningPlayer.id = changedPlayer.id;
+                        owningPlayer.points = changedPlayer.points;
+                        owningPlayer.textLocked = changedPlayer.text_locked;
+                    }
+                })
+            })
+        }
         playerTextsEchoChannel = echoInstance.channel(playerTextsChannelName.value);
-        playerTextsEchoChannel.listen('Player\\TextChanged', (event: unknown) => {
-            if(owningPlayer.userId == event.userId)return;
-            if(lobby.hostId == event.userId){
-                hostText.value = event.text;
-                return;
-            }
-            const player = getPlayer(event.userId);
-            if(player != null){
-                player.text = event.text
-            }
-        })
+        if(playerTextsEchoChannel != null){
+            playerTextsEchoChannel.listen('Player\\TextChanged', (event: any) => {
+                if(owningPlayer.userId == event.userId)return;
+                if(lobby.hostId == event.userId){
+                    hostText.value = event.text;
+                    return;
+                }
+                const player = getPlayer(event.userId);
+                if(player != null){
+                    player.text = event.text
+                }
+            })
+        }
+        buzzerEchoChannel = echoInstance.channel(buzzerChannelName.value);
+        if(buzzerEchoChannel != null){
+            buzzerEchoChannel.listen('Buzzer\\BuzzerChanged', (event: any) => {
+                if(event.buzzerCanceled || event.userId == owningPlayer.userId) return;
+                if(event.wasBuzzerLock){
+                    playBuzzSound(buzzVolume.value);
+                }else if(event.buzzerResult){
+                    playCorrectSound(buzzVolume.value);
+                }else{
+                    playFalseSound(buzzVolume.value);
+                }
+            })
+        }
     }
 
     function leaveBroadcastListeners(){
@@ -167,6 +208,10 @@ const buzzerLobbyAPIPayload = computed(() => {
         if(playerTextsEchoChannel != null){
             echoInstance.leave(playerTextsChannelName.value);
             playerTextsEchoChannel = null;
+        }
+        if(buzzerEchoChannel != null){
+            echoInstance.leave(buzzerChannelName.value);
+            buzzerEchoChannel = null;
         }
     }
 
@@ -221,6 +266,23 @@ const buzzerLobbyAPIPayload = computed(() => {
         await axios.patch(`/api/broadcast/playerText/${lobby.lobbyCode}/${owningPlayer.userId}`, playerTextAPIPayload)
     }
 
+    async function handleBuzzerSound(wasBuzzerLock: boolean, buzzerResult: boolean = false, buzzerCanceled: boolean = false){
+        if(wasBuzzerLock){
+            playBuzzSound(buzzVolume.value);
+        }else if(buzzerResult){
+            playCorrectSound(buzzVolume.value);
+        }else{
+            playFalseSound(buzzVolume.value);
+        }
+        const buzzerAPIPayload = {
+            wasBuzzerLock: wasBuzzerLock,
+            buzzerResult: buzzerResult,
+            buzzerCanceled: buzzerCanceled,
+            userId: owningPlayer.userId
+        }
+        await axios.patch(`/api/broadcast/buzzer/${lobby.lobbyCode}`, buzzerAPIPayload);
+    }
+
     function getPlayer(userId: string){
         const playerIndex = players.value.findIndex(player => player.userId === userId);
         if(playerIndex != -1){
@@ -229,9 +291,10 @@ const buzzerLobbyAPIPayload = computed(() => {
         return null;
     }
 
-    async function changeBuzzerLobbyData(buzzerLocked: boolean, buzzedPlayerId: string){
+    async function changeBuzzerLobbyData(buzzerLocked: boolean, buzzedPlayerId: string, showPoints: boolean = buzzerLobby.showPoints){
         buzzerLobby.buzzerLocked = buzzerLocked;
         buzzerLobby.buzzedPlayerId = buzzedPlayerId;
+        buzzerLobby.showPoints = showPoints
         await axios.patch(`/api/buzzer/${lobby.lobbyCode}`, buzzerLobbyAPIPayload.value);
     }
 
@@ -266,6 +329,7 @@ const buzzerLobbyAPIPayload = computed(() => {
 
     function handleBuzz(){
         changeBuzzerLobbyData(true, owningPlayer.userId);
+        handleBuzzerSound(true)
     }
 
     function handleBuzzChange(newState: boolean){
@@ -277,19 +341,20 @@ const buzzerLobbyAPIPayload = computed(() => {
         if(player != null){
             await changePlayerData(player.userId, player.points + correctBuzzPoints.value, player.textLocked)
         }
+        await handleBuzzerSound(false, true);
         await changeBuzzerLobbyData(false, owningPlayer.userId)
         await unlockAllTexts();
     }
 
     async function handleFalseBuzz(){
         const changePlayers = players.value.filter(p => p.userId != buzzerLobby.buzzedPlayerId);
-        if(changePlayers.length === 0){
-            return;
+        if(changePlayers.length !== 0){
+            changePlayers.forEach(player => {
+                player.points += falseBuzzPoints.value;
+            });
+            await bulkUpdatePlayers(players.value);
         }
-        changePlayers.forEach(player => {
-            player.points += falseBuzzPoints.value;
-        });
-        await bulkUpdatePlayers(players.value);
+        await handleBuzzerSound(false,false);
         await changeBuzzerLobbyData(false, owningPlayer.userId)
         await unlockAllTexts();
     }
@@ -338,6 +403,22 @@ async function lockAllTexts(){
         }
     }
 
+    function handleShowPointsChange(newState: boolean){
+        changeBuzzerLobbyData(buzzerLobby.buzzerLocked, buzzerLobby.buzzedPlayerId, newState)
+    }
+
+    function handleBuzzThroughSpacebar(event){
+        if(event.key === ' ' || event.keyCode === 32){
+            const activeElement = document.activeElement;
+            const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' ||
+            activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable);
+            if(!isInputFocused && !buzzerLobby.buzzerLocked){
+                event.preventDefault();
+                handleBuzz();
+            }
+        }
+    }
+
     onMounted(() => {
         owningPlayer.userId = initializeTempUserId();
         owningPlayer.name = initializeTempName();
@@ -346,11 +427,17 @@ async function lockAllTexts(){
             initializePropPlayers(props.propBuzzerLobby?.buzzer_players);
             initializePlayer();
             initializeBroadcastListeners();
+            if(!owningPlayer.isHost){
+                window.addEventListener('keydown', handleBuzzThroughSpacebar)
+            }
         }
 
     })
 
     onUnmounted(() => {
+        if(!owningPlayer.isHost){
+            window.removeEventListener('keydown', handleBuzzThroughSpacebar)
+        }
         leaveBroadcastListeners();
     })
 </script>
@@ -362,6 +449,7 @@ async function lockAllTexts(){
             <PlayerList class="player-list"
                         :players="players"
                         :is-host="owningPlayer.isHost"
+                        :show-points="buzzerLobby.showPoints"
                         @decrease-points="handleDecreasePoints"
                         @increase-points="handleIncreasePoints"/>
             <setting-list class="settings-list">
@@ -369,7 +457,10 @@ async function lockAllTexts(){
                     :is-host="owningPlayer.isHost"
                     v-model:correct-points="correctBuzzPoints"
                     v-model:false-points="falseBuzzPoints"
-                    v-model:manual-points="manualChangePoints"/>
+                    v-model:manual-points="manualChangePoints"
+                    v-model:show-points="buzzerLobby.showPoints"
+                    @update:show-points="handleShowPointsChange"/>
+                <volume-setting v-model:buzz-volume="buzzVolume"/>
             </setting-list>
 
             <div class="main-section">

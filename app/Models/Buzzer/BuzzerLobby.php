@@ -11,6 +11,17 @@ use Illuminate\Database\Eloquent\Model;
 class BuzzerLobby extends Model
 {
     protected $guarded = [];
+
+    protected $casts = [
+        'settings' => 'array',
+        'buzzer_locked' => 'boolean'
+    ];
+
+    protected $attributes = [
+        'settings' => '{
+            "show_points": true
+        }',
+    ];
     public function buzzer_players(){
         return $this->hasMany(BuzzerPlayer::class);
     }
@@ -18,8 +29,4 @@ class BuzzerLobby extends Model
     public function lobby(){
         return $this->belongsTo(Lobby::class);
     }
-
-    protected $casts = [
-        'buzzer_locked' => 'boolean'
-    ];
 }

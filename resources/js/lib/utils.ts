@@ -60,3 +60,29 @@ export function createRandomId(length = 10) : string{
     }
     return id;
 }
+
+export function playBuzzSound(volume: number){
+    const soundFilePath = '/sounds/buzzer.mp3';
+    playSound(soundFilePath, volume)
+}
+
+export function playFalseSound(volume: number){
+    const soundFilePath = '/sounds/wrong-buzz.mp3';
+    playSound(soundFilePath, volume)
+}
+
+export function playCorrectSound(volume: number){
+    const soundFilePath = '/sounds/correct-buzz.mp3';
+    playSound(soundFilePath, volume)
+}
+
+export function playSound(soundFilePath, volume){
+    try{
+        const audio = new Audio(soundFilePath);
+        audio.volume = volume / 100;
+
+        audio.play();
+    }catch(error:any){
+        console.error(error)
+    }
+}

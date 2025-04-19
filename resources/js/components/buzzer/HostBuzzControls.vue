@@ -1,4 +1,7 @@
 ﻿<script setup lang="ts">
+    import Lock from '@/components/icons/lock.vue';
+    import Unlock from '@/components/icons/unlock.vue';
+
     const props = defineProps({
         buzzerLocked: {
             type: Boolean,
@@ -44,8 +47,8 @@
                 @click="handleBuzzerChange(!buzzerLocked)"
                 :class="[buzzerLocked? 'error' : 'success', 'buzzer-state has-tooltip']"
                 :data-tooltip="buzzerLocked? 'unlock buzzer' : 'lock buzzer'">
-                <span class="locked-item">🔒</span>
-                <span class="unlocked-item">🔓</span>
+                <lock v-if="buzzerLocked"/>
+                <unlock v-else/>
             </button>
             <button @click="handleFalseBuzz" v-bind:disabled="buzzedPlayerName == ''" class="false-button error">✗</button>
         </div>
@@ -71,30 +74,12 @@
             .locked-item{
                 display: none;
             }
-
-        /*&:hover{
-                .unlocked-item{
-                    display: none;
-                }
-                .locked-item{
-                    display: block;
-                }
-            }*/
         }
 
         &.error{
             .unlocked-item{
                 display: none;
             }
-
-            /*&:hover{
-                .unlocked-item{
-                    display: block;
-                }
-                .locked-item{
-                    display: none;
-                }
-            }*/
         }
     }
 

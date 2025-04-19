@@ -1,4 +1,7 @@
 ﻿<script setup lang="ts">
+    import Unlock from '@/components/icons/unlock.vue';
+    import Lock from '@/components/icons/lock.vue';
+
     interface Props{
         players: Player[];
     }
@@ -27,19 +30,21 @@
 <template>
     <div class="player-text-container">
         <div class="heading-container">
-            <button @click="handleUnlockAll" class="success has-tooltip" data-tooltip="unlock all texts">🔓</button>
+            <button @click="handleUnlockAll" class="success has-tooltip" data-tooltip="unlock all texts"><unlock/></button>
             <h2 class="heading">Texts from Players</h2>
-            <button @click="handleLockAll" class="error has-tooltip" data-tooltip="lock all texts">🔒</button>
+            <button @click="handleLockAll" class="error has-tooltip" data-tooltip="lock all texts"><lock/></button>
         </div>
 
         <div class="text-container">
             <div class="player-text" v-for="player in players" :key="player.userId">
                 <div class="name-container">
                     <label class="name">{{ player.name }}</label>
-                    <button @click="handlePlayerTextLockChange(player.userId, !player.textLocked)" class="has-tooltip"
-                            :data-tooltip="player.textLocked ? 'unlock text' : 'lock text'">{{ player.textLocked ? '🔒' : '🔓'}}</button>
+                    <button @click="handlePlayerTextLockChange(player.userId, !player.textLocked)" class="lock-button has-tooltip"
+                            :data-tooltip="player.textLocked ? 'unlock text' : 'lock text'">
+                    <lock v-if="player.textLocked"/>
+                    <unlock v-else/></button>
                 </div>
-                <textarea disabled v-bind:value="player.text"/>
+                <textarea readonly v-bind:value="player.text"/>
             </div>
         </div>
     </div>
@@ -79,10 +84,7 @@
                 gap: 10px;
 
                 button{
-                    line-height: 0;
-                    font-size: 16px;
-                    width: 30px;
-                    height: 30px;
+                    padding: 0;
 
                     &::after{
                         font-size: 16px;

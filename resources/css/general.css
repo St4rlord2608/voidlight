@@ -30,6 +30,7 @@ section{
 
 button{
     cursor: pointer;
+    justify-items: center;
 }
 
 h1{
@@ -73,7 +74,7 @@ input[type="number"]{
 .has-tooltip::after {
     content: attr(data-tooltip);
     position: absolute;
-    bottom: 50%;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
 
@@ -139,7 +140,7 @@ button{
     }
 
     &.warning{
-        background: var(--button-warning60);
+        background: var(--button-warning40);
 
         &:hover:not(:disabled){
             background: var(--button-warning100);
@@ -157,19 +158,19 @@ button{
     }
 
     &.success{
-        background: var(--button-success60);
+        background: var(--button-success30);
 
         &:hover:not(:disabled){
-            background: var(--button-success100);
+            background: var(--button-success80);
             box-shadow: -2px 4px 73px -2px var(--button-success60);
         }
     }
 
     &.error{
-        background: var(--button-error60);
+        background: var(--button-error30);
 
         &:hover:not(:disabled){
-            background: var(--button-error100);
+            background: var(--button-error80);
             box-shadow: -2px 4px 73px -2px var(--button-error60);
         }
     }

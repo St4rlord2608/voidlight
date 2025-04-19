@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Broadcast\BuzzerAPIController;
 use App\Http\Controllers\Broadcast\PlayerTextAPIController;
 use App\Http\Controllers\Buzzer\BuzzerLobbyAPIController;
 use App\Http\Controllers\Buzzer\BuzzerPlayerAPIController;
@@ -32,3 +33,4 @@ Route::patch('/lobby/{lobbyCode}/users/bulk-update', [BuzzerPlayerBulkAPIControl
 Route::get('/lobby/{lobbyCode}', [LobbyAPIController::class, 'show']);
 
 Route::patch('/broadcast/playerText/{lobbyCode}/{userId}', [PlayerTextAPIController::class, 'update']);
+Route::patch('/broadcast/buzzer/{lobbyCode}', [BuzzerAPIController::class, 'update']);

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Lobby\Lobby::class)->unique()->constrained()->onDelete('cascade');
             $table->boolean('buzzer_locked')->default(false);
             $table->string('buzzed_player_id')->nullable();
+            $table->json('settings')->nullable();
             $table->timestamps();
         });
     }
