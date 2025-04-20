@@ -3,15 +3,17 @@ namespace App\Services\Lobby;
 
 use App\Enums\LobbyType;
 use App\Models\Lobby\Lobby;
+use App\Models\Lobby\SubLobby;
 
 class LobbyService
 {
     public function createLobby(string $hostId, LobbyType $lobbyType) : Lobby{
         $lobbyCode = $this->CreateValidLobbyCode();
+        $subLobby = SubLobby::where('lobby_type', $lobbyType->label())->firstOrFail();
         $lobby = Lobby::create([
             'lobby_code' => $lobbyCode,
             'host_id' => $hostId,
-            'lobby_type' => $lobbyType->label()
+            'sub_lobby_id' => $subLobby->id,
         ]);
         return $lobby;
     }
@@ -30,7 +32,7 @@ class LobbyService
 
     private function CreateUncheckedLobbyCode(): string
     {
-        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
         $lobbyCode = "";
         $maxIndex = strlen($chars) - 1;
         for($i = 0; $i < 10; $i++){

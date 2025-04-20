@@ -3,7 +3,8 @@
     interface Props{
         players: Player[];
         isHost: boolean;
-        userId;
+        userId: string;
+        buzzedUserId :string | null;
         showPoints: boolean;
     }
 
@@ -27,7 +28,7 @@
     <div class="player-list-container card">
         <h2 class="player-list-heading">Players</h2>
         <ul class="player-list">
-            <li :class="[isHost ? '' : 'player', userId == player.userId? 'active-player' : '', 'player-card']" v-for="player in players" :key="player.userId">
+            <li :class="[isHost ? '' : 'player', userId == player.userId? 'active-player' : '', isHost && buzzedUserId === player.userId? 'has-buzzed' : '', 'player-card']" v-for="player in players" :key="player.userId">
                 <button v-if="isHost" class="adjust-button" @click="emitDecreasePoints(player.userId)">-</button>
                 <div class="content">
                     <span class="name">{{ player.name }}</span>
@@ -60,7 +61,6 @@
             border-radius: 20px;
             display: flex;
             flex-direction: row;
-            gap: 10px;
             justify-content: space-between;
             background: var(--secondary15);
             overflow: hidden;
@@ -73,8 +73,23 @@
                 );
             }
 
+            &.has-buzzed{
+                .content{
+                    background-image: linear-gradient(
+                        to right,
+                        var(--button-success20),
+                        var(--secondary15)
+                    );
+                }
+
+            }
+
             &.player{
-                padding: 10px 20px;
+                padding: 10px 0;
+
+                .content{
+                    padding: 10px 20px;
+                }
             }
 
             .adjust-button{
@@ -91,7 +106,7 @@
                 display: flex;
                 flex-direction: row;
                 width: 100%;
-                padding: 5px 0;
+                padding: 5px 10px;
                 gap: 10px;
 
                 .name{

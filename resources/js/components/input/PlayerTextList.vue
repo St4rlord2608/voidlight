@@ -41,8 +41,8 @@
                     <label class="name">{{ player.name }}</label>
                     <button @click="handlePlayerTextLockChange(player.userId, !player.textLocked)" class="lock-button has-tooltip"
                             :data-tooltip="player.textLocked ? 'unlock text' : 'lock text'">
-                    <lock v-if="player.textLocked"/>
-                    <unlock v-else/></button>
+                    <lock class="lock-btn" v-if="player.textLocked"/>
+                    <unlock class="unlock-btn" v-else/></button>
                 </div>
                 <textarea readonly v-bind:value="player.text"/>
             </div>
@@ -89,6 +89,22 @@
                     &::after{
                         font-size: 16px;
                         line-height: 1.5;
+                    }
+
+                    .lock-btn{
+                        color: var(--button-error50);
+
+                        &:hover{
+                            color: var(--button-error80);
+                        }
+                    }
+
+                    .unlock-btn{
+                        color: var(--button-success50);
+
+                        &:hover{
+                            color: var(--button-success80);
+                        }
                     }
                 }
                 .name{

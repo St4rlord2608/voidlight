@@ -13,11 +13,11 @@ class Lobby extends Model
 {
     protected $guarded = [];
 
-    protected $casts = [
-        'lobby_types' => LobbyType::class,
-    ];
-
     public function buzzer_lobby(){
         return $this->hasOne(BuzzerLobby::class);
+    }
+
+    public function subLobby(){
+        return $this->belongsTo(SubLobby::class);
     }
 }

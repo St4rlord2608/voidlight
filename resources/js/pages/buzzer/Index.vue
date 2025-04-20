@@ -60,6 +60,7 @@ import { initializeTempName, initializeTempUserId, setTempName } from '@/lib/uti
             const lobbyCode = response.data?.lobby.lobby_code;
             window.location.href = `/buzzer/${lobbyCode}`;
         }catch (error){
+            console.error(error)
             if(error.response){
                 createMessage.value = error.response.data.message;
             }

@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('host_id');
             $table->string('lobby_code')->unique();
-            $table->string('lobby_type');
+            $table->foreignIdFor(\App\Models\Lobby\SubLobby::class)->constrained();
             $table->timestamps();
-            $table->index('lobby_type');
+            $table->index('sub_lobby_id');
             $table->index('host_id');
         });
     }

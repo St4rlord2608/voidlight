@@ -49,7 +49,7 @@ class BuzzerLobbyAPIController extends Controller
             });
             return $buzzerLobby;
         }catch(\Throwable $e){
-            return response()->json(['message' => 'An unexpected error occurred while creating the lobby.'], 500);
+            return response()->json(['message' => 'An unexpected error occurred while creating the lobby.'.$e->getMessage()], 500);
         }
     }
 

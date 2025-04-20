@@ -12,6 +12,7 @@ import HostBuzzControls from '@/components/buzzer/HostBuzzControls.vue';
 import HostText from '@/components/input/HostText.vue';
 import PlayerTextList from '@/components/input/PlayerTextList.vue';
 import VolumeSetting from '@/components/settings/VolumeSetting.vue';
+import CopyText from '@/components/general/copy-text.vue';
 
     const props = defineProps({
         propBuzzerLobby:{
@@ -444,13 +445,14 @@ async function lockAllTexts(){
 
 <template>
     <section class="buzzer-play-section">
-        <h1 class="heading">Buzz</h1>
+        <h1 class="heading">Buzzer: <copy-text :value="lobby.lobbyCode"/></h1>
         <div v-if="lobbyExists" class="buzzer-play-container">
             <PlayerList class="player-list"
                         :players="players"
                         :is-host="owningPlayer.isHost"
                         :user-id="owningPlayer.userId"
                         :show-points="buzzerLobby.showPoints"
+                        :buzzed-user-id="buzzerLobby.buzzedPlayerId"
                         @decrease-points="handleDecreasePoints"
                         @increase-points="handleIncreasePoints"/>
             <setting-list class="settings-list">
