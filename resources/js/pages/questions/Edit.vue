@@ -13,6 +13,7 @@ import {
     questionContainsLobbyType,
     saveQuestionsData
 } from '@/lib/question';
+import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue';
 
 interface Props{
     subLobbies: SubLobby,
@@ -24,6 +25,7 @@ const props = withDefaults(defineProps<Props>(), {})
 const questionSubLobbies: Ref<QuestionSubLobby[]> = new ref([]);
 const question: Ref<Question> = ref({id: -1, question: '', answer: '', clues: [], lobbyTypes: []});
 const categories: Ref<Category[]> = ref([]);
+const allCategoryNames: Ref<string[]> = ref([]);
 const questionsData: Ref<QuestionsData> = ref([]);
 const isNew: Ref<boolean> = ref(false);
 const newCategoryName: Ref<string> = ref('');
@@ -61,6 +63,7 @@ function handleAddCategory(){
     if(!categories.value.some(cat => cat.name == category.name)){
         categories.value.push(category);
     }
+    newCategoryName.value = '';
 }
 
 function handleRemoveCategory(category: Category){
@@ -94,6 +97,11 @@ function reorderClues(){
 
 onMounted(() => {
     questionsData.value = loadQuestionsData();
+    if(questionsData.value.categories){
+        allCategoryNames.value = questionsData.value.categories.map(category => category.name);
+        console.log(allCategoryNames.value)
+        console.log(questionsData.value.categories)
+    }
     const index = questionsData.value.questions.findIndex(quest => quest.id == props.questionId);
     if(index != -1){
         question.value = questionsData.value.questions[index];
@@ -106,7 +114,6 @@ onMounted(() => {
             return a.order - b.order;
         })
     }
-    console.log(questionsData.value)
     questionSubLobbies.value = props.subLobbies.map(subLobby => ({
         id: subLobby.id,
         lobby_type: subLobby.lobby_type,
@@ -153,11 +160,14 @@ onMounted(() => {
                     <h2>Answer</h2>
                     <textarea v-model="question.answer"/>
                 </div>
-                <div>
+                <div class="category-input-block">
                     <h2>Categories</h2>
                     <div class="new-category-input-block">
-                        <input type="text" placeholder="category" v-model="newCategoryName"/>
-                        <button class="success" @click="handleAddCategory">Add category</button>
+                        <TextAutocompleteInput v-model:model-value="newCategoryName"
+                                               :items="allCategoryNames"
+                                               placeholder="Enter category"
+                                                @on-enter="handleAddCategory"/>
+                        <button class="success add-category" @click="handleAddCategory">Add category</button>
                     </div>
                     <div class="category-list">
                         <div class="category-item" v-bind:key="category.id" v-for="category in categories">
@@ -224,6 +234,55 @@ onMounted(() => {
             .value-container{
                 grid-column: 2;
                 grid-row: 1 / span 2;
+
+                .input-container{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+
+                    .category-input-block{
+                        .new-category-input-block{
+                            margin-bottom: 20px;
+                        }
+
+                        .category-list{
+                            display: flex;
+                            gap: 15px;
+                            flex-wrap: wrap;
+                            padding: 10px 20px;
+                            background: var(--secondary20);
+                            border-radius: 10px;
+
+                            .category-item{
+                                padding: 5px 10px;
+                                display: flex;
+                                flex-direction: row;
+                                gap: 10px;
+                                justify-content: space-between;
+                                border: 1px solid var(--accent-secondary50);
+                                border-radius: 20px;
+                                background: var(--secondary15);
+                                overflow: hidden;
+                                align-items: center;
+
+                                button{
+                                    width: 30px;
+                                    height: 30px;
+                                    border-radius: 50%;
+                                    line-height: 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .new-category-input-block{
+                    display: flex;
+
+                    .add-category{
+                        min-width: fit-content;
+                    }
+                }
             }
         }
     }
