@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('answer');
             $table->text('question');
-            $table->string('userId');
+            $table->string('user_id');
             $table->timestamps();
         });
     }

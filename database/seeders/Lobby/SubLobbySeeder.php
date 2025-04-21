@@ -17,8 +17,8 @@ class SubLobbySeeder extends Seeder
         foreach (LobbyType::cases() as $lobbyType) {
 
             SubLobby::updateOrCreate(
-                ['lobby_type' => $lobbyType],
-                ['lobby_type' => $lobbyType]
+                ['lobby_type' => $lobbyType, 'label' => $lobbyType->label()],
+                ['lobby_type' => $lobbyType, 'label' => $lobbyType->label()]
             );
         }
     }

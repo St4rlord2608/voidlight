@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('clues', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\Question\Question::class);
+            $table->string('value');
+            $table->integer('order');
             $table->timestamps();
         });
     }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sub_lobbies', function (Blueprint $table) {
             $table->id();
             $table->string('lobby_type')->unique();
+            $table->string('label');
             $table->timestamps();
         });
     }
