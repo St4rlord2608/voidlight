@@ -154,6 +154,11 @@ export function getCategoriesForQuestion(questionsData: QuestionsData, question:
     return questionsData.categories.filter(category => question.categoryIds.includes(category.id));
 }
 
+export function getQuestionsForCategory(questionsData: QuestionsData, category: Category): Question[]{
+    if(!category.name || !category.id || !questionsData.questions) return [];
+    return questionsData.questions.filter(question => question.categoryIds.includes(category.id));
+}
+
 export function addQuestion(questionsData: QuestionsData, newQuestion: Question): QuestionsData{
     questionsData.questions.push(newQuestion);
     questionsData.nextQuestionId++;

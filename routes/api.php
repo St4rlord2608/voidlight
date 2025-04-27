@@ -5,6 +5,7 @@ use App\Http\Controllers\Broadcast\PlayerTextAPIController;
 use App\Http\Controllers\Buzzer\BuzzerLobbyAPIController;
 use App\Http\Controllers\Buzzer\BuzzerPlayerAPIController;
 use App\Http\Controllers\Buzzer\BuzzerPlayerBulkAPIController;
+use App\Http\Controllers\Jeopardy\JeopardyLobbyAPIController;
 use App\Http\Controllers\Lobby\LobbyAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,11 +21,15 @@ Route::get('/products', function (Request $request) {
 Route::get('/lobbies', [LobbyAPIController::class, 'index']);
 
 Route::post('/lobby', [LobbyAPIController::class, 'store']);
+Route::get('/lobby/{lobbyCode}', [LobbyAPIController::class, 'show']);
 
 Route::post('/buzzer', [BuzzerLobbyAPIController::class, 'store']);
+Route::post('/jeopardy', [JeopardyLobbyAPIController::class, 'store']);
 
 Route::get('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'show']);
 Route::patch('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'update']);
+
+Route::get('/jeopardy/{lobbyCode}', [JeopardyLobbyAPIController::class, 'show']);
 
 Route::post('/buzzer/{lobbyCode}/{userId}', [BuzzerPlayerAPIController::class, 'store']);
 Route::patch('/buzzer/{lobbyCode}/{updateUserId}', [BuzzerPlayerAPIController::class, 'update']);

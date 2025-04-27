@@ -6,6 +6,7 @@ use App\Enums\LobbyType;
 use App\Http\Controllers\Controller;
 use App\Models\Lobby\Lobby;
 use App\Services\Lobby\LobbyService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class LobbyAPIController extends Controller
@@ -37,9 +38,36 @@ class LobbyAPIController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Lobby $lobby)
+    public function show($lobbyCode, Request $request)
     {
-        //
+        $request->validate([
+            'userId' => 'required',
+            'userName' => 'required'
+        ]);
+        try{
+            $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail()->load('subLobby');
+            $subLobby = $lobby->subLobby;
+            switch ($subLobby->lobby_type) {
+                case LobbyType::QUIZ_POKER:
+                    return response()->json(['message' => 'Quiz Poker found'], 200);
+                    break;
+                case LobbyType::BUZZER:
+                    $buzzerLobby = $lobby->buzzer_lobby;
+                    if (!$buzzerLobby) {
+                        return response()->json(['message' => 'No Buzzer Lobby found for this lobby'], 404);
+                    }
+                    $buzzerLobby->load('lobby.subLobby');
+                    return $buzzerLobby;
+                    break;
+                case LobbyType::JEOPARDY:
+                    return response()->json(['message' => 'Jeopardy found'], 200);
+                    break;
+            }
+        }catch(ModelNotFoundException $e){
+            return response()->json(['message' => 'Lobby not found.'], 404);
+        }catch(\Throwable $e){
+            return response()->json(['message' => 'Unexpected error: '.$e->getMessage()], 500);
+        }
     }
 
     /**

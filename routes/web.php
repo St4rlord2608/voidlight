@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Buzzer\BuzzerLobbyController;
+use App\Http\Controllers\Jeopardy\JeopardyLobbyController;
+use App\Http\Controllers\Lobby\LobbyController;
 use App\Http\Controllers\Question\QuestionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,8 +18,10 @@ Route::get('/', function () {
 Route::get('buzzer', function(){
     return Inertia::render('buzzer/Index');
 });
+Route::get('join', [LobbyController::class, 'index']);
 
 Route::get('buzzer/{lobbyCode}', [BuzzerLobbyController::class, 'show']);
+Route::get('jeopardy/{lobbyCode}', [JeopardyLobbyController::class, 'show']);
 
 Route::get('questions', [QuestionController::class, 'index']);
 Route::get('question/new', [QuestionController::class, 'create']);

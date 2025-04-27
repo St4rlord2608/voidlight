@@ -14,6 +14,7 @@ import {
     saveQuestionsData
 } from '@/lib/question';
 import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue';
+import Heading from '@/components/general/Heading.vue';
 
 interface Props{
     subLobbies: SubLobby,
@@ -125,8 +126,8 @@ onMounted(() => {
 
 <template>
 <section class="edit-question-section">
-    <h1 v-if="!isNew">Edit Question</h1>
-    <h1 v-else>Create Question</h1>
+    <heading v-if="!isNew" back-link="/questions" home-link="/">Edit Question</heading>
+    <heading v-else back-link="/questions" home-link="/">Create question</heading>
     <div class="edit-container">
         <div class="lobby-type-container card">
             <h2>Lobby types</h2>
@@ -215,6 +216,9 @@ onMounted(() => {
                     display: grid;
                     grid-template-columns: 1fr 20fr;
                     gap: 30px;
+                    background: var(--secondary15);
+                    border-radius: 20px;
+                    padding: 5px 10px;
 
                     .clue-order{
                         align-content: center;

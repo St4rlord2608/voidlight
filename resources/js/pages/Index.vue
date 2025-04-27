@@ -7,7 +7,7 @@ import { Head } from '@inertiajs/vue3';
 
 </Head>
     <div>
-        <a href="/buzzer">Play buzzer</a>
+        <a href="/join">Play</a>
         <a href="/questions">View questions</a>
     </div>
 </template>
