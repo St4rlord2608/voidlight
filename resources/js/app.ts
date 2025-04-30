@@ -1,4 +1,9 @@
+import './echo'
+
 import '../css/app.css';
+import '../css/buzzer/index.css'
+import '../css/general.css'
+import '../css/buzzer/play.css'
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';

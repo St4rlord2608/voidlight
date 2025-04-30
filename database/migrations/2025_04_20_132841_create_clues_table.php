@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lobbies', function (Blueprint $table) {
+        Schema::create('clues', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(\App\Models\Question\Question::class);
+            $table->string('value');
+            $table->integer('order');
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lobbies');
+        Schema::dropIfExists('clues');
     }
 };
