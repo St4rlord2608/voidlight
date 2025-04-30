@@ -15,3 +15,14 @@ export interface JeopardyBoardCell{
     points: number,
     answered: boolean
 }
+
+export interface BoardCell{
+    points: number;
+    question: Question;
+    answered: boolean;
+}
+
+export interface BoardColumn{
+    category: Category;
+    cells: BoardCell[];
+}

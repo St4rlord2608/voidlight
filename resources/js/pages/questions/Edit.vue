@@ -23,8 +23,8 @@ interface Props{
 
 const props = withDefaults(defineProps<Props>(), {})
 
-const questionSubLobbies: Ref<QuestionSubLobby[]> = new ref([]);
-const question: Ref<Question> = ref({id: -1, question: '', answer: '', clues: [], lobbyTypes: []});
+const questionSubLobbies: Ref<QuestionSubLobby[]> = ref([]);
+const question: Ref<Question> = ref({id: -1, question: '', answer: '', clues: [], lobbyTypes: [], categoryIds: []});
 const categories: Ref<Category[]> = ref([]);
 const allCategoryNames: Ref<string[]> = ref([]);
 const questionsData: Ref<QuestionsData> = ref([]);

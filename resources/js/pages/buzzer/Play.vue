@@ -13,6 +13,7 @@ import HostText from '@/components/input/HostText.vue';
 import PlayerTextList from '@/components/input/PlayerTextList.vue';
 import VolumeSetting from '@/components/settings/VolumeSetting.vue';
 import CopyText from '@/components/general/copy-text.vue';
+import Heading from '@/components/general/Heading.vue';
 
     const props = defineProps({
         propBuzzerLobby:{
@@ -445,7 +446,7 @@ async function lockAllTexts(){
 
 <template>
     <section class="buzzer-play-section">
-        <h1 class="heading">Buzzer: <copy-text :value="lobby.lobbyCode"/></h1>
+        <Heading back-link="/join" home-link="/">Buzzer: <copy-text :value="lobby.lobbyCode"/></Heading>
         <div v-if="lobbyExists" class="buzzer-play-container">
             <PlayerList class="player-list"
                         :players="players"

@@ -61,10 +61,14 @@ import { onMounted, onUnmounted } from 'vue';
         }
 
         .modal-content{
+            text-align: center;
+            align-content: center;
             width: fit-content;
             height: fit-content;
             min-width: 300px;
             min-height: 300px;
+            max-width: 80%;
+            max-height: 80%;
             position: relative;
             background: var(--secondary40);
 

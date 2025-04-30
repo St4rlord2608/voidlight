@@ -80,6 +80,7 @@ export function loadQuestionsData(): QuestionsData{
         }catch(error){
             console.error('Error parsing questions data from localstorage:', error);
             localStorage.removeItem(questionsDataKey);
+            return initializeQuestionsData();
         }
     }else{
         return initializeQuestionsData();
@@ -95,7 +96,8 @@ export function initializeQuestionsData(): QuestionsData{
     };
 }
 
-export function addCategory(questionsData: QuestionsData, name: string, question: Question = null): QuestionsData{
+export function addCategory(questionsData: QuestionsData, name: string, question: Question | null = null): QuestionsData{
+    console.log(question)
     if(!name) return questionsData;
 
     if(questionsData.categories.some(cat => cat.name.toLowerCase() === name.toLowerCase())){
@@ -111,6 +113,7 @@ export function addCategory(questionsData: QuestionsData, name: string, question
     if(question != null){
         const index = questionsData.questions.findIndex(quest => quest.id == question.id);
         if(index != -1){
+            console.log(questionsData.questions[index]);
             questionsData.questions[index].categoryIds.push(newCat.id);
         }
     }
@@ -144,7 +147,7 @@ export function deleteCategory(questionsData: QuestionsData, category: Category)
     return questionsData;
 }
 
-export function categoryExists(questionsData: QuestionsData, category: Category): QuestionsData{
+export function categoryExists(questionsData: QuestionsData, category: Category): boolean{
     const index = questionsData.categories.findIndex(cat => cat.name == category.name);
     return index != -1;
 }
