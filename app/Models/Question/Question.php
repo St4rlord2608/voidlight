@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Question extends Model
 {
+    protected $guarded = [];
 
     public function subLobbies(){
         return $this->belongsToMany(

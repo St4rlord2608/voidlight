@@ -1,17 +1,25 @@
 ﻿<script setup lang="ts">
 import Heading from '@/components/general/Heading.vue';
 import CopyText from '@/components/general/copy-text.vue';
-import { Lobby } from '@/types/lobby';
-import { BoardCell, BoardColumn, JeopardyLobby } from '@/types/jeopardy';
-import { Question, QuestionsData } from '@/types/Question';
+import { DBLobby, Lobby } from '@/types/lobby';
+import {
+    BoardCell,
+    BoardColumn, DBBoardCell,
+    DBBoardColumn,
+    DBJeopardyBoardCell,
+    JeopardyBoardCell,
+    JeopardyLobby
+} from '@/types/jeopardy';
+import { DBQuestion, Question, QuestionsData } from '@/types/Question';
 import { onMounted, ref, Ref } from 'vue';
 import { loadQuestionsData } from '@/lib/question';
 import Modal from '@/components/general/Modal.vue';
-import { Category } from '@/types/Category';
+import { Category, DBCategory } from '@/types/Category';
 import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue';
+import axios from 'axios';
 
     interface Props{
-        propLobby: Lobby,
+        propLobby: DBLobby,
         propJeopardyLobby: JeopardyLobby,
         propErrorMessage?: object | null
     }
@@ -30,6 +38,7 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
     const showQuestionModal: Ref<boolean> = ref(false);
     const showCategoryModal: Ref<boolean> = ref(false);
     const boardColumns: Ref<BoardColumn[]> = ref([]);
+    const DBBoardColumns: Ref<DBBoardColumn[]> = ref([]);
     const showErrorMessage: Ref<boolean> = ref(false);
     const errorMessage: Ref<string> = ref('');
     const isEditing: Ref<boolean> = ref(true);
@@ -38,9 +47,17 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
         showCategoryModal.value = true;
     }
 
+    function switchIsEditing(newIsEditing: boolean){
+        isEditing.value = newIsEditing;
+    }
+
     function reorderBoardColumnCells(boardColumn: BoardColumn){
         boardColumn.cells.sort((a, b) => a.points - b.points);
     }
+
+function reorderDBBoardColumnCells(boardColumn: DBBoardColumn){
+    boardColumn.cells.sort((a, b) => a.points - b.points);
+}
 
     function filterCategories(){
         const allCategories: Category[] = questionsData.value.categories;
@@ -79,7 +96,7 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
         showQuestionModal.value = true;
     }
 
-    function addNewQuestion(question: Question){
+    async function addNewQuestion(question: Question){
         if(newQuestionPoints.value == null || isNaN(newQuestionPoints.value) || newQuestionPoints.value == 0){
             newQuestionPoints.value = 100;
         }
@@ -91,14 +108,60 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
                 question: question,
                 answered: false
             }
-            selectedBoardColumn.cells.push(newBoardCell);
-            reorderBoardColumnCells(selectedBoardColumn);
+            try{
+                const payload = {
+                    category: {
+                        localId: selectedBoardColumn.category.id,
+                        name: selectedBoardColumn.category.name
+                    },
+                    question:{
+                        localId: question.id,
+                        question: question.question,
+                        answer: question.answer,
+                        clues: question.clues.map(c => ({value: c.value, order: c.order}))
+                    },
+                    points: newQuestionPoints.value,
+                    userId: 'testUser'
+                }
+                const response = await axios.post(`/api/jeopardy/${props.propLobby.lobby_code}/board_cell`, payload);
+                addNewDBBoardCell(response.data[0]);
+                selectedBoardColumn.cells.push(newBoardCell);
+                reorderBoardColumnCells(selectedBoardColumn);
+            }catch(error){
+                errorMessage.value = 'Error in uploading question. Please try again'
+                showErrorMessage.value = true;
+                showQuestionModal.value = false;
+            }
+
         }else{
             errorMessage.value = 'Selected question does not have the selected Category'
             showErrorMessage.value = true;
             showQuestionModal.value = false;
         }
         showQuestionModal.value = false;
+    }
+
+    function addNewDBBoardCell(dbBoardCell: DBJeopardyBoardCell){
+        const index = DBBoardColumns.value.findIndex(boardColumn => dbBoardCell.category.local_id == boardColumn.category.local_id);
+        let selectedDBBoardColumn: DBBoardColumn;
+        if(index != -1){
+            selectedDBBoardColumn = DBBoardColumns.value[index];
+        }else{
+            selectedDBBoardColumn = {
+                category: dbBoardCell.category,
+                cells: [],
+            }
+            DBBoardColumns.value.push(selectedDBBoardColumn)
+        }
+        const newDBBoardCell: DBBoardCell = {
+            points: dbBoardCell.points,
+            question: dbBoardCell.question,
+            answered: dbBoardCell.answered,
+        }
+        selectedDBBoardColumn.cells.push(newDBBoardCell);
+        reorderDBBoardColumnCells(selectedDBBoardColumn);
+        console.log(dbBoardCell)
+        console.log(DBBoardColumns.value)
     }
 
     function deleteBoardColumn(deleteBoardColumn: BoardColumn){
@@ -139,7 +202,8 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
         <div v-if="true" class="jeopardy-play-container">
             <div class="main-section card">
                 <div class="button-container">
-
+                    <button v-if="isEditing" @click="switchIsEditing(false)" class="primary">switch to Play</button>
+                    <button v-else @click="switchIsEditing(true)" class="warning">switch to Edit</button>
                 </div>
                 <div v-if="isEditing" class="edit-container">
                     <div class="edit-column" :key="boardColumn.category.id" v-for="boardColumn in boardColumns">
@@ -164,7 +228,7 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
                     </div>
                 </div>
                 <div class="play-container" v-else>
-                    <div class="column" :key="boardColumn.category.id" v-for="boardColumn in boardColumns">
+                    <div class="column" :key="boardColumn.category.id" v-for="boardColumn in DBBoardColumns">
                         <div class="category-name">{{ boardColumn.category.name }}</div>
                         <ul class="row">
                             <li class="row-item" :key="boardCell.question.id" v-for="boardCell in boardColumn.cells">
@@ -208,6 +272,11 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
 
 <style scoped>
     .jeopardy-play-container{
+        .button-container{
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
         .edit-container{
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -272,6 +341,41 @@ import TextAutocompleteInput from '@/components/input/TextAutocompleteInput.vue'
                 .add-column{
                     .add-category{
                         border: 1px solid var(--accent-secondary50);
+                    }
+                }
+            }
+        }
+
+        .play-container{
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            justify-items: center;
+            .column{
+
+                .category-name{
+                    border: 1px solid var(--accent-secondary50);
+                    margin-bottom: 20px;
+                    width: fit-content;
+                    border-radius: 10px;
+                    display: flex;
+                    justify-content: center;
+                    padding: 10px;
+                }
+                .row{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+
+                    .row-item{
+                        display: flex;
+                        justify-content: center;
+                        .question-points{
+                            width: fit-content;
+                            border-radius: 10px;
+                            display: flex;
+                            justify-content: center;
+                            background: var(--secondary20);
+                        }
                     }
                 }
             }
