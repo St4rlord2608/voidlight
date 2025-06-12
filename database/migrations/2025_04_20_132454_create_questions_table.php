@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->integer('local_id')->nullable();
+            $table->foreignIdFor(\App\Models\User::class)->constrained();
             $table->string('answer');
             $table->text('question');
-            $table->string('user_id');
             $table->timestamps();
         });
     }

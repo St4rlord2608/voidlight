@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('lobbies', function (Blueprint $table) {
             $table->id();
-            $table->string('host_id');
+            $table->foreignId('host_id')->constrained('users')->onDelete('cascade');
             $table->string('lobby_code')->unique();
-            $table->foreignIdFor(\App\Models\Lobby\SubLobby::class)->constrained();
+            $table->morphs('lobbyable');
             $table->timestamps();
-            $table->index('sub_lobby_id');
-            $table->index('host_id');
         });
     }
 

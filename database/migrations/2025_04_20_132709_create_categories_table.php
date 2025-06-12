@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->integer('local_id')->nullable();
+            $table->foreignIdFor(\App\Models\User::class)->constrained();
             $table->string('name');
-            $table->string('user_id');
             $table->timestamps();
         });
     }

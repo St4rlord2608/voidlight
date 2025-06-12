@@ -14,12 +14,8 @@ class Lobby extends Model
 {
     protected $guarded = [];
 
-    public function buzzer_lobby(){
-        return $this->hasOne(BuzzerLobby::class);
-    }
-
-    public function jeopardy_lobby(){
-        return $this->hasOne(JeopardyLobby::class);
+    public function lobbyable(){
+        return $this->morphTo();
     }
 
     public function subLobby(){

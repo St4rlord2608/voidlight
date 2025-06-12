@@ -29,7 +29,7 @@ class BuzzerLobby extends Model
     }
 
     public function lobby(){
-        return $this->belongsTo(Lobby::class);
+        return $this->morphOne(Lobby::class, 'lobbyable');
     }
 
     public function questions(): MorphToMany{

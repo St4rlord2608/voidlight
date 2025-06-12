@@ -1,93 +1,144 @@
+﻿
 <script setup lang="ts">
-import InputError from '@/components/legacy/InputError.vue';
-import TextLink from '@/components/legacy/TextLink.vue';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import AuthBase from '@/layouts/AuthLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { LoaderCircle } from 'lucide-vue-next';
+import Heading from '@/components/general/Heading.vue';
 
-defineProps<{
-    status?: string;
-    canResetPassword: boolean;
-}>();
+const form = useForm({});
 
-const form = useForm({
-    email: '',
-    password: '',
-    remember: false,
-});
-
-const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
-};
+function loginAsGuest(): void {
+    form.post(route('guest.login'));
+}
 </script>
 
 <template>
-    <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
-        <Head title="Log in" />
-
-        <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
-            {{ status }}
+    <Head title="Login" />
+    <section class="login-section">
+        <div class="login-container">
+            <div class="login-card card">
+                <Heading>Game Lobby</Heading>
+                <div class="guest-login">
+                    <h2>Join Instantly</h2>
+                    <form @submit.prevent="loginAsGuest">
+                        <button type="submit" class="guest-button primary">
+                            Continue as Guest
+                        </button>
+                    </form>
+                </div>
+                <div class="separator">
+                    <hr />
+                    <span>OR</span>
+                    <hr />
+                </div>
+                <div class="login-form">
+                    <h2>Login with Account</h2>
+                    <form @submit.prevent>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="Full login coming soon"
+                                readonly
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input
+                                id="password"
+                                type="password"
+                                readonly
+                            />
+                        </div>
+                        <button class="login-button" type="submit" disabled>
+                            Login
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <form @submit.prevent="submit" class="flex flex-col gap-6">
-            <div class="grid gap-6">
-                <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        required
-                        autofocus
-                        :tabindex="1"
-                        autocomplete="email"
-                        v-model="form.email"
-                        placeholder="email@example.com"
-                    />
-                    <InputError :message="form.errors.email" />
-                </div>
-
-                <div class="grid gap-2">
-                    <div class="flex items-center justify-between">
-                        <Label for="password">Password</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" :tabindex="5">
-                            Forgot password?
-                        </TextLink>
-                    </div>
-                    <Input
-                        id="password"
-                        type="password"
-                        required
-                        :tabindex="2"
-                        autocomplete="current-password"
-                        v-model="form.password"
-                        placeholder="Password"
-                    />
-                    <InputError :message="form.errors.password" />
-                </div>
-
-                <div class="flex items-center justify-between" :tabindex="3">
-                    <Label for="remember" class="flex items-center space-x-3">
-                        <Checkbox id="remember" v-model="form.remember" :tabindex="4" />
-                        <span>Remember me</span>
-                    </Label>
-                </div>
-
-                <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="form.processing">
-                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    Log in
-                </Button>
-            </div>
-
-            <div class="text-center text-sm text-muted-foreground">
-                Don't have an account?
-                <TextLink :href="route('register')" :tabindex="5">Sign up</TextLink>
-            </div>
-        </form>
-    </AuthBase>
+    </section>
 </template>
+
+<style scoped>
+.login-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 750px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 30px 40px;
+}
+
+.guest-login h2, .login-form h2 {
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+.guest-button {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.separator hr {
+    flex-grow: 1;
+    border: none;
+    height: 1px;
+    background-color: var(--secondary60);
+}
+
+.separator span {
+    color: var(--text70);
+    font-size: 14px;
+}
+
+.login-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: var(--text80);
+    padding-left: 5px;
+}
+
+.login-form input[readonly] {
+    cursor: not-allowed;
+    background: var(--secondary10);
+}
+
+.login-button {
+    width: 100%;
+    margin-top: 10px;
+}
+</style>
+
+

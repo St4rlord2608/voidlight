@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('buzzer_lobbies', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Lobby\Lobby::class)->unique()->constrained()->onDelete('cascade');
             $table->boolean('buzzer_locked')->default(false);
-            $table->string('buzzed_player_id')->nullable();
+            $table->foreignId('buzzed_player_id')->constrained('users')->onDelete('cascade')->nullable();
             $table->json('settings')->nullable();
             $table->timestamps();
         });

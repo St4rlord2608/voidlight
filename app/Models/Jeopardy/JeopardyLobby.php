@@ -10,7 +10,7 @@ class JeopardyLobby extends Model
     protected $guarded = [];
 
     public function lobby(){
-        return $this->belongsTo(Lobby::class);
+        return $this->morphOne(Lobby::class, 'lobbyable');
     }
 
     public function boardCells(){

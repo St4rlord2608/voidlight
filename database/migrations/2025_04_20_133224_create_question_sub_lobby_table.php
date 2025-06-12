@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lobby_questions_pivot', function (Blueprint $table) {
+        Schema::create('question_sub_lobby', function (Blueprint $table) {
             $table->foreignIdFor(\App\Models\Question\Question::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(\App\Models\Lobby\SubLobby::class)->constrained()->onDelete('cascade');
             $table->unique(['sub_lobby_id', 'question_id'], 'question_sub_lobby_unique');
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lobby_questions_pivot');
+        Schema::dropIfExists('question_sub_lobby');
     }
 };

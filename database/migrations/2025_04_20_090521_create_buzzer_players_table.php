@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('buzzer_players', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
+            $table->foreignIdFor(\App\Models\User::class)->constrained();
             $table->string('name');
             $table->foreignIdFor(\App\Models\Buzzer\BuzzerLobby::class)->constrained();
             $table->integer('points')->default(0);

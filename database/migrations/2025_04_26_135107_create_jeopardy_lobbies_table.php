@@ -14,7 +14,6 @@ return new class extends Migration
     {
         Schema::create('jeopardy_lobbies', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Lobby::class)->unique()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

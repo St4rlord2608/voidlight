@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('question_categories_pivot', function (Blueprint $table) {
+        Schema::create('category_question', function (Blueprint $table) {
             $table->foreignIdFor(\App\Models\Question\Question::class);
             $table->foreignIdFor(\App\Models\Question\Category::class);
             $table->unique(['question_id', 'category_id']);
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('question_categories_pivot');
+        Schema::dropIfExists('category_question');
     }
 };
