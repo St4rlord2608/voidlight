@@ -39,6 +39,7 @@ import { ref, watch } from 'vue';
         emit('update:model-value', item);
         showSuggestions.value = false;
         filteredItems.value = [];
+        emit('on-enter');
     }
 
     function handleBlur(){

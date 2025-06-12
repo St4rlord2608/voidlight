@@ -1,5 +1,13 @@
 ﻿import { Category } from '@/types/Category';
 
+export interface DBQuestion{
+    id: number,
+    local_id: number | null,
+    answer: string,
+    question: string,
+    user_id: string
+}
+
 export interface Question{
     id: number,
     answer: string,

@@ -3,6 +3,7 @@ import { Question, QuestionsData } from '@/types/Question';
 import { onMounted, ref, Ref, watch } from 'vue';
     import { Category } from '@/types/Category';
 import { deleteQuestion, loadQuestionsData, saveQuestionsData } from '@/lib/question';
+import Heading from '@/components/general/Heading.vue';
 
     interface Props{
         propQuestions: Question[]
@@ -46,7 +47,7 @@ import { deleteQuestion, loadQuestionsData, saveQuestionsData } from '@/lib/ques
 
 <template>
     <section class="question-listing-section">
-        <h1>Questions</h1>
+        <Heading back-link="/" home-link="/">Questions</Heading>
         <div class="questions-container">
             <div class="question-filter-container card">
 

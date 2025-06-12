@@ -135,6 +135,20 @@ input[type="text"]{
     }
 }
 
+input{
+    background: var(--secondary20);
+    border-radius: 10px;
+    border: 1px solid var(--accent-secondary20);
+    padding: 10px;
+    width: 100%;
+
+    &:focus{
+        outline: none;
+        border-color: var(--accent-secondary80);
+        box-shadow: -2px 4px 73px -2px var(--secondary30);
+    }
+}
+
 button{
     padding: 10px;
     width: fit-content;
