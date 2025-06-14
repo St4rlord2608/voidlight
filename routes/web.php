@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\GuestController;
 use App\Http\Controllers\Buzzer\BuzzerLobbyController;
+use App\Http\Controllers\Buzzer\BuzzerPlayerBulkController;
+use App\Http\Controllers\Buzzer\BuzzerPlayerController;
 use App\Http\Controllers\Jeopardy\JeopardyLobbyController;
 use App\Http\Controllers\Lobby\LobbyController;
 use App\Http\Controllers\Question\QuestionController;
@@ -34,10 +36,26 @@ Route::middleware(['auth'])->group(function () {
     Route::get('lobbies/{lobby:lobby_code}', [LobbyController::class, 'show'])->name('lobby.show')
         ->missing(function(\Illuminate\Http\Request $request){
             return response()->json(['message' => 'Lobby not found.'], 404);
-    });;
-
+    });
 
     Route::get('buzzer/{lobby:lobby_code}', [BuzzerLobbyController::class, 'show'])->name('buzzer.show');
+    Route::patch('buzzer/{lobby:lobby_code}', [BuzzerLobbyController::class, 'update'])->missing(function(\Illuminate\Http\Request $request){
+        return response()->json(['message' => 'Unexpected error'], 500);
+    });
+
+    Route::post('buzzer/{lobby:lobby_code}/{userId}', [BuzzerPlayerController::class, 'store'])->missing(function(\Illuminate\Http\Request $request){
+        return response()->json(['message' => 'An unexpected error occurred while creating the player.'], 500);
+    });
+    Route::patch('buzzer/{lobby:lobby_code}/{buzzerPlayerId}', [BuzzerPlayerController::class, 'update'])->missing(function(\Illuminate\Http\Request $request){
+        return response()->json(['message' => 'An unexpected error occurred while updating a player.'], 500);
+    });
+    Route::patch('/buzzer/{lobby:lobby_code}/users/bulk-update', [BuzzerPlayerBulkController::class, 'update'])->missing(function(\Illuminate\Http\Request $request){
+        return response()->json(['message' => 'An unexpected error occurred while updating multiple players.'], 500);
+    });
+
+
+
+
     Route::get('jeopardy/{lobby:lobby_code}', [JeopardyLobbyController::class, 'show'])->name('jeopardy.show');
 
     Route::get('questions', [QuestionController::class, 'index']);

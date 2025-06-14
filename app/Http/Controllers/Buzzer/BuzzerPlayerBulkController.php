@@ -10,12 +10,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class BuzzerPlayerBulkAPIController extends Controller
+class BuzzerPlayerBulkController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
         //
     }
@@ -37,9 +45,17 @@ class BuzzerPlayerBulkAPIController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(BuzzerPlayer $buzzerPlayer)
+    {
+        //
+    }
+
+    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $lobbyCode)
+    public function update(Request $request, Lobby $lobby)
     {
         $validated = $request->validate([
             'players' => 'required|array|min:1',
@@ -73,22 +89,21 @@ class BuzzerPlayerBulkAPIController extends Controller
                 }
             });
         }catch(\Throwable $e){
-            Log::error("Bulk player update failed for lobby {$lobbyCode}: ".$e->getMessage(), ['exception' => $e]);
+            Log::error("Bulk player update failed for lobby {$lobby->lobby_code}: ".$e->getMessage(), ['exception' => $e]);
             return response()->json(['message' => 'Bulk update failed during database transaction.', 'error' => $e->getMessage()], 500);
         }
 
         if($updatedCount > 0){
             try{
-                $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail();
                 $buzzerLobby = $lobby->buzzer_lobby->load('buzzer_players');
 
                 broadcast(new PlayerChanged(
                     $buzzerLobby,
-                    $lobbyCode,
+                    $lobby->lobby_code,
                     $validated['requestingUserId']
                 ));
             }catch(\Throwable $e){
-                Log::error("Broadcasting failed after bulk player update for lobby {$lobbyCode}: ".$e->getMessage(), ['exception' => $e]);
+                Log::error("Broadcasting failed after bulk player update for lobby {$lobby->lobby_code}: ".$e->getMessage(), ['exception' => $e]);
             }
         }
 

@@ -3,8 +3,6 @@
 use App\Http\Controllers\Broadcast\BuzzerAPIController;
 use App\Http\Controllers\Broadcast\PlayerTextAPIController;
 use App\Http\Controllers\Buzzer\BuzzerLobbyAPIController;
-use App\Http\Controllers\Buzzer\BuzzerPlayerAPIController;
-use App\Http\Controllers\Buzzer\BuzzerPlayerBulkAPIController;
 use App\Http\Controllers\Jeopardy\JeopardyBoardCellAPIController;
 use App\Http\Controllers\Jeopardy\JeopardyLobbyAPIController;
 use Illuminate\Http\Request;
@@ -27,14 +25,14 @@ Route::get('/products', function (Request $request) {
 //Route::post('/jeopardy', [JeopardyLobbyAPIController::class, 'store']);
 
 Route::get('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'show']);
-Route::patch('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'update']);
+//Route::patch('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'update']);
 
 Route::get('/jeopardy/{lobbyCode}', [JeopardyLobbyAPIController::class, 'show']);
 Route::post('/jeopardy/{lobbyCode}/board_cell', [JeopardyBoardCellAPIController::class, 'store']);
 
-Route::post('/buzzer/{lobbyCode}/{userId}', [BuzzerPlayerAPIController::class, 'store']);
-Route::patch('/buzzer/{lobbyCode}/{updateUserId}', [BuzzerPlayerAPIController::class, 'update']);
-Route::patch('/lobby/{lobbyCode}/users/bulk-update', [BuzzerPlayerBulkAPIController::class, 'update']);
+//Route::post('/buzzer/{lobbyCode}/{userId}', [BuzzerPlayerAPIController::class, 'store']);
+//Route::patch('/buzzer/{lobbyCode}/{updateUserId}', [BuzzerPlayerAPIController::class, 'update']);
+//Route::patch('/lobby/{lobbyCode}/users/bulk-update', [BuzzerPlayerBulkAPIController::class, 'update']);
 
 //Route::get('/lobby/{lobbyCode}', [LobbyAPIController::class, 'show']);
 

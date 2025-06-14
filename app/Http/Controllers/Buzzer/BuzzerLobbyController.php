@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Buzzer;
 
 use App\Enums\LobbyType;
+use App\Events\Buzzer\LobbyChanged;
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerLobby;
 use App\Models\Lobby\Lobby;
@@ -59,7 +60,7 @@ class BuzzerLobbyController extends Controller
             if(!$buzzerLobby || !$buzzerLobby instanceof BuzzerLobby){
                 throw new \Exception('Buzzer Lobby not found');
             }
-            $buzzerLobby->load('buzzer_players');
+            $buzzerLobby->load('buzzer_players.user');
 
         }catch(\Throwable $ex){
             return Inertia::render('buzzer/Play', [
@@ -85,9 +86,38 @@ class BuzzerLobbyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BuzzerLobby $buzzerLobby)
+    public function update(Request $request, Lobby $lobby)
     {
-        //
+        $validated = $request->validate([
+            'id' => 'required',
+            'userId' => 'required',
+            'buzzerLocked' => 'required|boolean',
+            'buzzedPlayerId' => 'present',
+            'showPoints' => 'required|boolean',
+        ]);
+        try{
+            $settings = [
+                'show_points' => $validated['showPoints']
+            ];
+            $buzzerLobby = BuzzerLobby::where('id', $validated['id'])->firstOrFail();
+            $hostId = $lobby->host_id;
+            if($hostId != $validated['buzzedPlayerId'] && $buzzerLobby->buzzer_locked){
+                throw new \Exception("buzzer already locked");
+            }
+            $buzzerLobby->buzzer_locked = $validated['buzzerLocked'];
+            $buzzerLobby->buzzed_player_id = $validated['buzzedPlayerId'];
+            $buzzerLobby->settings = $settings;
+            $buzzerLobby->save();
+            broadcast(new LobbyChanged(
+                $lobby->lobby_code,
+                $validated['userId'],
+                $validated['buzzerLocked'],
+                $validated['buzzedPlayerId'],
+                $validated['showPoints']
+            ));
+        }catch(\Throwable $e){
+            return response()->json(['message' => 'Unexpected error: '.$e->getMessage()], 500);
+        }
     }
 
     /**

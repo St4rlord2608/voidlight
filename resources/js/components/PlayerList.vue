@@ -1,10 +1,10 @@
 ﻿<script setup lang="ts">
 
     interface Props{
-        players: Player[];
+        players: BuzzerPlayer[];
         isHost: boolean;
-        userId: string;
-        buzzedUserId :string | null;
+        userId: number;
+        buzzedUserId :number | null;
         showPoints: boolean;
     }
 
@@ -15,11 +15,11 @@
         'increase-points'
     ])
 
-    function emitDecreasePoints(userId:string){
+    function emitDecreasePoints(userId:number){
         emit('decrease-points', userId);
     }
 
-    function emitIncreasePoints(userId:string){
+    function emitIncreasePoints(userId:number){
         emit('increase-points', userId);
     }
 </script>
@@ -31,7 +31,7 @@
             <li :class="[isHost ? '' : 'player', userId == player.userId? 'active-player' : '', isHost && buzzedUserId === player.userId? 'has-buzzed' : '', 'player-card']" v-for="player in players" :key="player.userId">
                 <button v-if="isHost" class="adjust-button" @click="emitDecreasePoints(player.userId)">-</button>
                 <div class="content">
-                    <span class="name">{{ player.name }}</span>
+                    <span class="name">{{ player.user.name }}</span>
                     <div v-if="isHost" class="host-points-container">
                         <input v-bind:value="player.points" class="points">
                         <div class="point-text">Points</div>
