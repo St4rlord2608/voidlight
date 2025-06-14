@@ -1,7 +1,6 @@
 ﻿<script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import { initializeTempName, initializeTempUserId, setTempName } from '@/lib/utils';
 import { SubLobby } from '@/types/subLobby';
 import Heading from '@/components/general/Heading.vue';
 
@@ -13,33 +12,16 @@ const props = withDefaults(defineProps<Props>(), {})
 
 const lobbyCode = ref('');
 
-const user = reactive({
-    userId: '',
-    userName: ''
-})
-
 const joinMessage = ref('');
 const createMessage = ref('');
-
-const lobbyData = reactive({
-    hostId: '',
-    lobbyCode: ''
-});
-
-const buzzerLobbyData = reactive({
-    id: '',
-    lobbyId: ''
-})
-
 
 async function createLobby(subLobby: SubLobby){
     createMessage.value = '';
     try{
-        const response = await axios.post(`/api/${subLobby.lobby_type}`, lobbyData);
+        const response = await axios.post(`/${subLobby.lobby_type}`);
         const lobbyCode = response.data?.lobby.lobby_code;
         window.location.href = `/${subLobby.lobby_type}/${lobbyCode}`;
     }catch (error){
-        console.error(error)
         if(error.response){
             createMessage.value = error.response.data.message;
         }
@@ -49,18 +31,13 @@ async function createLobby(subLobby: SubLobby){
 async function joinLobby(){
     resetJoinText();
     try{
-        if(lobbyCode.value != '' && user.userName != ''){
-            const response = await axios.get(`/api/lobby/${lobbyCode.value}`, {params:user})
-            console.log(response)
-            setTempName(user.userName);
-            window.location.href = `/${response.data.lobby.sub_lobby.lobby_type}/${lobbyCode.value}`;
+        if(lobbyCode.value != ''){
+            const response = await axios.get(`/lobbies/${lobbyCode.value}`)
+            window.location.href = `/${response.data.lobby_type}/${lobbyCode.value}`;
         }else if(lobbyCode.value == ''){
             joinMessage.value = 'Please enter a code';
-        }else{
-            joinMessage.value = 'Please enter a username'
         }
     }catch(error){
-        console.log(error)
         if(error.response){
             joinMessage.value = error.response.data.message;
         }
@@ -73,10 +50,7 @@ function resetJoinText(){
 
 
 onMounted(() => {
-    user.userId = initializeTempUserId();
-    user.userName = initializeTempName();
-    lobbyData.hostId = user.userId;
-    console.log(props)
+
 })
 </script>
 
@@ -90,12 +64,6 @@ onMounted(() => {
                     <input
                         type="text"
                         v-model="lobbyCode"
-                        placeholder="Code"
-                        @focus="resetJoinText"
-                    />
-                    <input
-                        type="text"
-                        v-model="user.userName"
                         placeholder="Code"
                         @focus="resetJoinText"
                     />

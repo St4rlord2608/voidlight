@@ -2,43 +2,40 @@
 namespace App\Services\Lobby;
 
 use App\Enums\LobbyType;
+use App\Models\Buzzer\BuzzerLobby;
+use App\Models\Jeopardy\JeopardyLobby;
 use App\Models\Lobby\Lobby;
 use App\Models\Lobby\SubLobby;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LobbyService
 {
     public function createLobby(string $hostId, LobbyType $lobbyType) : Lobby{
-        $lobbyCode = $this->CreateValidLobbyCode();
-        $subLobby = SubLobby::where('lobby_type', $lobbyType->label())->firstOrFail();
-        $lobby = Lobby::create([
-            'lobby_code' => $lobbyCode,
-            'host_id' => $hostId,
-            'sub_lobby_id' => $subLobby->id,
-        ]);
-        return $lobby;
+        return DB::transaction(function () use ($hostId, $lobbyType) {
+            $lobbyable = match($lobbyType) {
+                LobbyType::BUZZER => BuzzerLobby::create(),
+                    LobbyType::JEOPARDY => JeopardyLobby::create(),
+                    default => throw new \InvalidArgumentException("Unsupported lobby type."),
+            };
+            $lobbyCode = $this->generateUniqueLobbyCode();
+
+            $lobby = $lobbyable->lobby()->create([
+                'host_id' => $hostId,
+                'lobby_code' => $lobbyCode,
+            ]);
+            return $lobby;
+        });
     }
 
-    private function CreateValidLobbyCode(): string
-    {
-        $lobbies = Lobby::all();
-        $lobbyCode = $this->CreateUncheckedLobbyCode();
-        while($lobbies->filter(function($item) use ($lobbyCode){
-                return $item->LobbyCode == $lobbyCode;
-            })->count() !== 0){
-            $lobbyCode = $this->CreateUncheckedLobbyCode();
+    private function generateUniqueLobbyCode(): string{
+        $maxAttempts = 10;
+        for($i = 0; $i <= $maxAttempts; $i++){
+            $lobbyCode = Str::random(10);
+            if(!Lobby::where('lobby_code', $lobbyCode)->exists()){
+                return $lobbyCode;
+            }
         }
-        return $lobbyCode;
-    }
-
-    private function CreateUncheckedLobbyCode(): string
-    {
-        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-        $lobbyCode = "";
-        $maxIndex = strlen($chars) - 1;
-        for($i = 0; $i < 10; $i++){
-            $randomIndex = random_int(0, $maxIndex);
-            $lobbyCode .= $chars[$randomIndex];
-        }
-        return $lobbyCode;
+        throw new \Exception('Failed to generate unique lobby code after ' . $maxAttempts . ' attempts.');
     }
 }

@@ -32,25 +32,7 @@ class BuzzerLobbyAPIController extends Controller
      */
     public function store(Request $request)
     {
-        try{
-            $validated = $request->validate([
-                'hostId' => 'required'
-            ]);
-            $buzzerLobby = DB::transaction(function () use ($validated) {
-                $lobby = $this->lobbyService->createLobby($validated['hostId'], LobbyType::BUZZER);
-                $createdBuzzerLobby = BuzzerLobby::create([
-                    'lobby_id' => $lobby->id,
-                ]);
-                if(!$createdBuzzerLobby){
-                    throw new \Exception("Failed to create buzzer lobby");
-                }
-                $createdBuzzerLobby->load('lobby');
-                return $createdBuzzerLobby;
-            });
-            return $buzzerLobby;
-        }catch(\Throwable $e){
-            return response()->json(['message' => 'An unexpected error occurred while creating the lobby.'.$e->getMessage()], 500);
-        }
+
     }
 
     /**

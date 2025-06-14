@@ -26,10 +26,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('buzzer', function(){
         return Inertia::render('buzzer/Index');
     });
-    Route::get('join', [LobbyController::class, 'index']);
 
-    Route::get('buzzer/{lobbyCode}', [BuzzerLobbyController::class, 'show']);
-    Route::get('jeopardy/{lobbyCode}', [JeopardyLobbyController::class, 'show']);
+
+    Route::get('join', [LobbyController::class, 'index']);
+    Route::post('buzzer', [BuzzerLobbyController::class, 'store']);
+    Route::post('jeopardy', [JeopardyLobbyController::class, 'store']);
+    Route::get('lobbies/{lobby:lobby_code}', [LobbyController::class, 'show'])->name('lobby.show')
+        ->missing(function(\Illuminate\Http\Request $request){
+            return response()->json(['message' => 'Lobby not found.'], 404);
+    });;
+
+
+    Route::get('buzzer/{lobby:lobby_code}', [BuzzerLobbyController::class, 'show'])->name('buzzer.show');
+    Route::get('jeopardy/{lobby:lobby_code}', [JeopardyLobbyController::class, 'show'])->name('jeopardy.show');
 
     Route::get('questions', [QuestionController::class, 'index']);
     Route::get('question/new', [QuestionController::class, 'create']);

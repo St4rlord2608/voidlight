@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Lobby;
 
+use App\Enums\LobbyType;
 use App\Http\Controllers\Controller;
-use App\Models\Lobby;
+use App\Models\Buzzer\BuzzerLobby;
+use App\Models\Jeopardy\JeopardyLobby;
+use App\Models\Lobby\Lobby;
 use App\Models\Lobby\SubLobby;
 use App\Services\Lobby\LobbyService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class LobbyController extends Controller
@@ -47,7 +52,21 @@ class LobbyController extends Controller
      */
     public function show(Lobby $lobby)
     {
-        //
+        try{
+            $user = Auth::user();
+            $lobby->load('lobbyable');
+            $specificLobby = $lobby->lobbyable;
+            $lobbyType = match (true){
+                $specificLobby instanceof BuzzerLobby => LobbyType::BUZZER,
+                $specificLobby instanceof JeopardyLobby => LobbyType::JEOPARDY,
+                default => throw new ModelNotFoundException()
+            };
+            return response()->json(['lobby_type' => $lobbyType], 200);
+        }catch(ModelNotFoundException $e){
+            return response()->json(['message' => 'Lobby not found.'], 404);
+        }catch(\Throwable $e){
+            return response()->json(['message' => 'Unexpected error: '.$e->getMessage()], 500);
+        }
     }
 
     /**

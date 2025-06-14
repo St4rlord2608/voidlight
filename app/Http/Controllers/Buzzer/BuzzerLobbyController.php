@@ -2,14 +2,22 @@
 
 namespace App\Http\Controllers\Buzzer;
 
+use App\Enums\LobbyType;
 use App\Http\Controllers\Controller;
 use App\Models\Buzzer\BuzzerLobby;
 use App\Models\Lobby\Lobby;
+use App\Services\Lobby\LobbyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class BuzzerLobbyController extends Controller
 {
+
+    public function __construct(protected LobbyService $lobbyService){
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -31,21 +39,28 @@ class BuzzerLobbyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $hostId = Auth::id();
+            $lobby = $this->lobbyService->createLobby($hostId, LobbyType::BUZZER);
+            return response()->json(['lobby' => $lobby], 200);
+        }catch(\Throwable $e){
+            return response()->json(['message' => 'An unexpected error occurred while creating the lobby.'.$e->getMessage()], 500);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($lobbyCode)
+    public function show(Lobby $lobby)
     {
         try{
-            $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail();
-            $buzzerLobby = $lobby->buzzer_lobby;
-            $buzzerLobby->load('buzzer_players');
-            if(!$buzzerLobby){
+            $lobby->load('lobbyable');
+            $buzzerLobby = $lobby->lobbyable;
+            if(!$buzzerLobby || !$buzzerLobby instanceof BuzzerLobby){
                 throw new \Exception('Buzzer Lobby not found');
             }
+            $buzzerLobby->load('buzzer_players');
+
         }catch(\Throwable $ex){
             return Inertia::render('buzzer/Play', [
                 'propLobby' => null,

@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers\Jeopardy;
 
+use App\Enums\LobbyType;
 use App\Http\Controllers\Controller;
 use App\Models\Jeopardy\JeopardyLobby;
 use App\Models\Lobby\Lobby;
+use App\Services\Lobby\LobbyService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class JeopardyLobbyController extends Controller
 {
+    public function __construct(protected LobbyService $lobbyService){
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -31,21 +37,27 @@ class JeopardyLobbyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $hostId = Auth::id();
+            $lobby = $this->lobbyService->createLobby($hostId, LobbyType::JEOPARDY);
+            return response()->json(['lobby' => $lobby], 200);
+        }catch(\Throwable $e){
+            return redirect()->back()->with('error', 'unexpected error: '.$e->getMessage());
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($lobbyCode)
+    public function show(Lobby $lobby)
     {
         try{
-            $lobby = Lobby::where('lobby_code', $lobbyCode)->firstOrFail();
-            $jeopardyLobby = $lobby->jeopardy_lobby;
-            $jeopardyLobby->load('boardCells');
-            if(!$jeopardyLobby){
+            $lobby->load('lobbyable');
+            $jeopardyLobby = $lobby->lobbyable;
+            if(!$jeopardyLobby || !$jeopardyLobby instanceof JeopardyLobby){
                 throw new \Exception("Failed to load jeopardy lobby");
             }
+            $jeopardyLobby->load('boardCells');
         }catch(\Throwable $e){
             return Inertia::render('jeopardy/Play', [
                 'propLobby' => null,

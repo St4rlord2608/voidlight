@@ -1,8 +1,8 @@
-﻿interface Player {
+﻿interface BuzzerPlayer {
     id: number;
-    userId: string;
+    user_id: string;
     name: string;
     points: number;
-    textLocked: boolean;
+    text_locked: boolean;
     text: string;
 }
