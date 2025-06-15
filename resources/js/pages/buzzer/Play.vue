@@ -95,10 +95,12 @@ const buzzerLobbyChannelName = computed(() => (lobby.lobbyCode ? `buzzer.${lobby
 const buzzerPlayersChannelName = computed(() => (lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}.playerChange` : null));
 const playerTextsChannelName = computed(() => (lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}.playerTextChange` : null));
 const buzzerChannelName = computed(() => (lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}.buzzerChange` : null));
+const lobbyChannelName = computed(() => (lobby.lobbyCode ? `buzzer.${lobby.lobbyCode}` : null));
 let buzzerLobbyEchoChannel: Channel | null = null;
 let buzzerPlayersEchoChannel: Channel | null = null;
 let playerTextsEchoChannel: Channel | null = null;
 let buzzerEchoChannel: Channel | null = null;
+let lobbyEchoChannel: Channel | null = null;
 
 function initializeLobbyData() {
     if (props.propBuzzerLobby && props.propLobby) {
@@ -152,9 +154,7 @@ function initializeBroadcastListeners() {
     }
     buzzerPlayersEchoChannel = echoInstance.channel(buzzerPlayersChannelName.value);
     if (buzzerPlayersEchoChannel != null) {
-        console.log("echo channel")
         buzzerPlayersEchoChannel.listen('Buzzer\\PlayerChanged', (event: any) => {
-            console.log("playerchanged")
             if (owningPlayer.userId == event.userId) {
                 return;
             }
@@ -174,32 +174,28 @@ function initializeBroadcastListeners() {
             });
         });
     }
-    playerTextsEchoChannel = echoInstance.channel(playerTextsChannelName.value);
-    if (playerTextsEchoChannel != null) {
-        playerTextsEchoChannel.listen('Player\\TextChanged', (event: any) => {
-            if (owningPlayer.userId == event.userId) return;
-            if (lobby.hostId == event.userId) {
-                hostText.value = event.text;
+    lobbyEchoChannel = echoInstance.private(lobbyChannelName.value);
+    if(lobbyEchoChannel != null){
+        lobbyEchoChannel
+            .listenForWhisper('player-text-changed', (payload: any) => {
+            if (lobby.hostId == payload.userId) {
+                hostText.value = payload.text;
                 return;
             }
-            const player = getPlayer(event.userId);
+            const player = getPlayer(payload.userId);
             if (player != null) {
-                player.text = event.text;
+                player.text = payload.text;
             }
-        });
-    }
-    buzzerEchoChannel = echoInstance.channel(buzzerChannelName.value);
-    if (buzzerEchoChannel != null) {
-        buzzerEchoChannel.listen('Buzzer\\BuzzerChanged', (event: any) => {
-            if (event.buzzerCanceled || event.userId == owningPlayer.userId) return;
-            if (event.wasBuzzerLock) {
-                playBuzzSound(buzzVolume.value);
-            } else if (event.buzzerResult) {
-                playCorrectSound(buzzVolume.value);
-            } else {
-                playFalseSound(buzzVolume.value);
-            }
-        });
+        })
+            .listenForWhisper('buzzer-sound', (payload: any) => {
+                if (payload.wasBuzzerLock) {
+                    playBuzzSound(buzzVolume.value);
+                } else if (payload.buzzerResult) {
+                    playCorrectSound(buzzVolume.value);
+                } else {
+                    playFalseSound(buzzVolume.value);
+                }
+        })
     }
 }
 
@@ -219,6 +215,10 @@ function leaveBroadcastListeners() {
     if (buzzerEchoChannel != null) {
         echoInstance.leave(buzzerChannelName.value);
         buzzerEchoChannel = null;
+    }
+    if(lobbyEchoChannel != null){
+        echoInstance.leave(lobbyChannelName.value);
+        lobbyEchoChannel = null;
     }
 }
 
@@ -267,10 +267,12 @@ async function changePlayerData(userId: number, points: number, textLocked: bool
 }
 
 async function changePlayerText(text: string) {
-    const playerTextAPIPayload = {
-        text: text,
-    };
-    await axios.patch(`/api/broadcast/playerText/${lobby.lobbyCode}/${owningPlayer.userId}`, playerTextAPIPayload);
+    if(lobbyEchoChannel){
+        lobbyEchoChannel.whisper('player-text-changed', {
+            text:text,
+            userId: owningPlayer.userId,
+        })
+    }
 }
 
 async function handleBuzzerSound(wasBuzzerLock: boolean, buzzerResult: boolean = false, buzzerCanceled: boolean = false) {
@@ -281,13 +283,13 @@ async function handleBuzzerSound(wasBuzzerLock: boolean, buzzerResult: boolean =
     } else {
         playFalseSound(buzzVolume.value);
     }
-    const buzzerAPIPayload = {
-        wasBuzzerLock: wasBuzzerLock,
-        buzzerResult: buzzerResult,
-        buzzerCanceled: buzzerCanceled,
-        userId: owningPlayer.userId,
-    };
-    await axios.patch(`/api/broadcast/buzzer/${lobby.lobbyCode}`, buzzerAPIPayload);
+    if(buzzerCanceled) return;
+    if(lobbyEchoChannel){
+        lobbyEchoChannel.whisper('buzzer-sound', {
+            wasBuzzerLock: wasBuzzerLock,
+            buzzerResult: buzzerResult
+        })
+    }
 }
 
 function getPlayer(userId: number) {

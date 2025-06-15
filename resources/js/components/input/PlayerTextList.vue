@@ -3,7 +3,7 @@
     import Lock from '@/components/icons/lock.vue';
 
     interface Props{
-        players: Player[];
+        players: BuzzerPlayer[];
     }
 
     const props = withDefaults(defineProps<Props>(), {})
@@ -14,7 +14,7 @@
         'lock-all'
     ])
 
-    function handlePlayerTextLockChange(userId: string, newState: boolean){
+    function handlePlayerTextLockChange(userId: number, newState: boolean){
         emit('change-player-text-lock', {userId: userId, newState: newState});
     }
 
@@ -38,7 +38,7 @@
         <div class="text-container">
             <div class="player-text" v-for="player in players" :key="player.userId">
                 <div class="name-container">
-                    <label class="name">{{ player.name }}</label>
+                    <label class="name">{{ player.user.name }}</label>
                     <button @click="handlePlayerTextLockChange(player.userId, !player.textLocked)" class="lock-button has-tooltip"
                             :data-tooltip="player.textLocked ? 'unlock text' : 'lock text'">
                     <lock class="lock-btn" v-if="player.textLocked"/>

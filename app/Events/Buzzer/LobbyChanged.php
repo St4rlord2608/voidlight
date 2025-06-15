@@ -13,15 +13,15 @@ class LobbyChanged implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $lobbyCode;
-    public string $userId;
+    public int $userId;
     public bool $buzzerLocked;
-    public ?string $buzzedPlayerId;
+    public ?int $buzzedPlayerId;
     public bool $showPoints;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $lobbyCode, string $userId, bool $buzzerLocked, ?string $buzzedPlayerId, string $showPoints)
+    public function __construct(string $lobbyCode, int $userId, bool $buzzerLocked, ?int $buzzedPlayerId, string $showPoints)
     {
         $this->lobbyCode = $lobbyCode;
         $this->userId = $userId;

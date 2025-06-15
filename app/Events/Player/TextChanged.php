@@ -16,13 +16,13 @@ class TextChanged implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $lobbyCode;
-    public string $userId;
+    public int $userId;
     public string $text;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $lobbyCode, string $userId, string $text)
+    public function __construct(string $lobbyCode, int $userId, string $text)
     {
         $this->lobbyCode = $lobbyCode;
         $this->userId = $userId;

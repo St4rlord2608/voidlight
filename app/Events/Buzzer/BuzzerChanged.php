@@ -19,12 +19,12 @@ class BuzzerChanged implements ShouldBroadcastNow
     public bool $wasBuzzerLock;
     public bool $buzzerResult;
     public bool $buzzerCanceled = false;
-    public string $userId;
+    public int $userId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(string $lobbyCode, bool $wasBuzzerLock, bool $buzzerResult, bool $buzzerCanceled, string $userId)
+    public function __construct(string $lobbyCode, bool $wasBuzzerLock, bool $buzzerResult, bool $buzzerCanceled, int $userId)
     {
         $this->lobbyCode = $lobbyCode;
         $this->wasBuzzerLock = $wasBuzzerLock;

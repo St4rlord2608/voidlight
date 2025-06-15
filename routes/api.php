@@ -16,25 +16,8 @@ Route::get('/products', function (Request $request) {
     return 'products';
 });
 
-//Route::get('/lobbies', [LobbyAPIController::class, 'index']);
-
-//Route::post('/lobby', [LobbyAPIController::class, 'store']);
-//Route::get('/lobby/{lobbyCode}', [LobbyAPIController::class, 'show']);
-
-//Route::post('/buzzer', [BuzzerLobbyAPIController::class, 'store']);
-//Route::post('/jeopardy', [JeopardyLobbyAPIController::class, 'store']);
-
-Route::get('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'show']);
-//Route::patch('/buzzer/{lobbyCode}', [BuzzerLobbyAPIController::class, 'update']);
-
 Route::get('/jeopardy/{lobbyCode}', [JeopardyLobbyAPIController::class, 'show']);
 Route::post('/jeopardy/{lobbyCode}/board_cell', [JeopardyBoardCellAPIController::class, 'store']);
 
-//Route::post('/buzzer/{lobbyCode}/{userId}', [BuzzerPlayerAPIController::class, 'store']);
-//Route::patch('/buzzer/{lobbyCode}/{updateUserId}', [BuzzerPlayerAPIController::class, 'update']);
-//Route::patch('/lobby/{lobbyCode}/users/bulk-update', [BuzzerPlayerBulkAPIController::class, 'update']);
-
-//Route::get('/lobby/{lobbyCode}', [LobbyAPIController::class, 'show']);
-
-Route::patch('/broadcast/playerText/{lobbyCode}/{userId}', [PlayerTextAPIController::class, 'update']);
-Route::patch('/broadcast/buzzer/{lobbyCode}', [BuzzerAPIController::class, 'update']);
+//Route::patch('/broadcast/playerText/{lobbyCode}/{userId}', [PlayerTextAPIController::class, 'update']);
+//Route::patch('/broadcast/buzzer/{lobbyCode}', [BuzzerAPIController::class, 'update']);

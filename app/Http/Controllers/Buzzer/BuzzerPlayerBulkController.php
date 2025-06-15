@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Buzzer;
 
 use App\Events\Buzzer\PlayerChanged;
 use App\Http\Controllers\Controller;
+use App\Models\Buzzer\BuzzerLobby;
 use App\Models\Buzzer\BuzzerPlayer;
 use App\Models\Lobby\Lobby;
 use Illuminate\Http\Request;
@@ -95,7 +96,11 @@ class BuzzerPlayerBulkController extends Controller
 
         if($updatedCount > 0){
             try{
-                $buzzerLobby = $lobby->buzzer_lobby->load('buzzer_players');
+                $buzzerLobby = $lobby->lobbyable;
+                if(!$buzzerLobby || !$buzzerLobby instanceof BuzzerLobby){
+                    throw new \Exception();
+                }
+                $buzzerLobby->load('buzzer_players');
 
                 broadcast(new PlayerChanged(
                     $buzzerLobby,
@@ -104,6 +109,7 @@ class BuzzerPlayerBulkController extends Controller
                 ));
             }catch(\Throwable $e){
                 Log::error("Broadcasting failed after bulk player update for lobby {$lobby->lobby_code}: ".$e->getMessage(), ['exception' => $e]);
+                return response()->json(['message' => 'Broadcasting failed after bulk player update'], 500);
             }
         }
 

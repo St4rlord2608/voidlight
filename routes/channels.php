@@ -9,3 +9,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('test-updates.{id}', function ($user, $id) {
     return true;
 });
+
+Broadcast::channel('buzzer.{lobbyCode}', function ($user, $lobbyCode) {
+    return true;
+});
